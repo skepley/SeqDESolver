@@ -46,8 +46,10 @@ classdef Scalar
 
     %% -------------------- Properties --------------------
     properties
+        Basis; % Taylor, Fourier, Chebyshev: string
         Coefficient; % N1-by-N2-by-...-Nd array: double or intval.
         Dimension; % d: integer
+        NumericalClass; % double, intval, Scalar: string
         Truncation; % [N1,...,Nd]: integer
     end
 
@@ -55,8 +57,7 @@ classdef Scalar
 
     properties(Hidden = 1)
         Weight = 'ones'; % [nu_1,...,nu_d]: positive double
-        NumericalClass; % double, intval, Scalar: string
-        Basis; % Taylor, Fourier, Chebyshev: string
+
     end
 
 
