@@ -1,47 +1,70 @@
-function objTailRatio = tailratio(obj,tailBeginsAt)
-% computes the norm of the higher order terms of a polynomial relative to the polynomial's norm
+function tailRatio = tailratio(obj, tailCutoff)
+%TAILRATIO - computes the norm of the higher order terms of a Scalar relative to Scalar's total norm
+%
+%   objTailRatio = TAILRATIO(obj, N) returns a value in [0,1]. N = [N1,...,Nd] is an integer vector of cutoffs which determine the "tail".
+%       Coefficient indices which exceed N are members of the tail. Their norm is divided by the norm of all coefficients.
+%
+%   Inputs:
+%       obj - Scalar
+%       tailCutoff - Integer vector of length d
+%
+%   Outputs:
+%       tailRatio - double
+%
+%   Subfunctions: NORM
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
-% Written by S. Kepley 04/2017
-% Added support for intvals 08/2017
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 23-Apr-2017; Last revision: 13-Aug-2018
 
-% INPUT:
-% tailBeginsAt (double): vector of values specifying where the tail terms begin
+if ~strcmp(obj.Basis, 'Taylor')
+    warning('tailratio - may not be appropriate for non-Taylor basis')
+end
 
 objDimsidx = obj(1).dims();
 Sz = size(obj(1).Coefficient);
 Sz = Sz(objDimsidx);
-if any(tailBeginsAt < 1) % Non-tail terms specified as fraction of total terms.
-    fractionTerms = tailBeginsAt < 1;
-    tailBeginsAt(fractionTerms) = round(tailBeginsAt(fractionTerms).*Sz(fractionTerms));
-    tailBeginsAt(tailBeginsAt < 1) = ones(size(tailBeginsAt < 1));
+if any(tailCutoff < 1) % Non-tail terms specified as fraction of total terms.
+    fractionTerms = tailCutoff < 1;
+    tailCutoff(fractionTerms) = round(tailCutoff(fractionTerms).*Sz(fractionTerms));
+    tailCutoff(tailCutoff < 1) = ones(size(tailCutoff < 1));
 end
 
 if length(obj) > 1 % vectors of Scalars
-%     getRatio = @(j)obj(j).tailratio(tailBeginsAt);
-    objTailRatio(length(obj)) = obj(end).tailratio(tailBeginsAt);
+%     getRatio = @(j)obj(j).tailratio(tailCutoff);
+    tailRatio(length(obj)) = obj(end).tailratio(tailCutoff);
     for j = 1:length(obj)-1
-       objTailRatio(j) = obj(j).tailratio(tailBeginsAt);
+       tailRatio(j) = obj(j).tailratio(tailCutoff);
     end
 else
-    switch length(tailBeginsAt)
+    switch length(tailCutoff)
         case 1 % obj is 1d
-            objTail = Scalar(obj.Coefficient(tailBeginsAt:end));
+            objTail = Scalar(obj.Coefficient(tailCutoff:end) obj.Basis);
 
         case 2 % obj is 2d
             tailCoefficient = obj.Coefficient;
-            tailCoefficient(1:tailBeginsAt(1)-1, 1:tailBeginsAt(2)-1) = zeros(1:tailBeginsAt(1)-1, 1:tailBeginsAt(2)-1);
-            objTail = Scalar(tailCoefficient);
+            tailCoefficient(1:tailCutoff(1)-1, 1:tailCutoff(2)-1) = zeros(1:tailCutoff(1)-1, 1:tailCutoff(2)-1);
+            objTail = Scalar(tailCoefficient obj.Basis);
 
         case 3 % obj is 3d
-            objTail = Scalar(obj.Coefficient(tailBeginsAt(1):end,tailBeginsAt(2):end,tailBeginsAt(3):end));
+            objTail = Scalar(obj.Coefficient(tailCutoff(1):end, obj.Basis, tailCutoff(2):end, tailCutoff(3):end));
 
         otherwise
-            error('objTailRatio not implemented for Scalar with dimension greater than 3')
+            error('tailRatio not implemented for Scalar with dimension greater than 3')
     end
     tailNorm = objTail.norm();
-    objTailRatio = tailNorm./obj.norm;
+    tailRatio = tailNorm./obj.norm;
 end
-if isa(objTailRatio,'intval')
-    objTailRatio = sup(objTailRatio);
+if isa(tailRatio,'intval')
+    tailRatio = sup(tailRatio);
 end
-end
+end % tailratio
+
+% Revision History:
+%{
+19-Aug-2017 - support for intval coefficients
+13-Aug-2018 - updated for Scalar class
+%}

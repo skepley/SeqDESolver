@@ -17,7 +17,12 @@ function evalObj = eval(obj, data)
 
 %   Author: Shane Kepley
 %   email: shane.kepley@rutgers.edu
-%   Date: 08-Aug-2018; Last revision: 08-Aug-2018
+%   Date: 08-Aug-2018; Last revision: 18-Aug-2018
+
+if ~strcmp(obj.Basis, 'Taylor')
+    warning('eval - only implemented for Taylor basis')
+end
+
 
 if length(obj) > 1 % vectorized method
     evalObj = cell(size(obj));
@@ -29,10 +34,10 @@ else
     switch obj.Dimension
         case 0 % constant function
             evalObj = obj.Coefficient(1)*ones(size(data));
-        case 1 % data should be an m length column vector
+        case 1 % data reshaped to m length row vector
             s = reshape(data,1,[]);
             S = bsxfun(@power,s,(0:obj.Truncation-1)');
-            evalObj = obj.Coefficient*S;
+            evalObj = S'*obj.Coefficient; % left row multiply column of coefficients
         case 2 % data should be an m-by-2 array
             s = data(:,1);
             t = data(:,2);
@@ -45,9 +50,10 @@ else
             error('eval not implemented for this dimension')
     end
 end
-end % end eval
+end %  eval
 
 % Revision History:
 %{
 08-Aug-2018 - moved out of classdef file
+18-Aug-2018 - changed 1-d formula to be consistent with column-major Scalar change
 %}

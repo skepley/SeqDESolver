@@ -8,18 +8,10 @@
 	"buffers":
 	[
 		{
-			"file": "dims.m",
-			"settings":
-			{
-				"buffer_size": 104,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "fixtime.m",
 			"settings":
 			{
-				"buffer_size": 1437,
+				"buffer_size": 1855,
 				"line_ending": "Windows"
 			}
 		},
@@ -27,7 +19,7 @@
 			"file": "fouriertaylortimes.m",
 			"settings":
 			{
-				"buffer_size": 1526,
+				"buffer_size": 1742,
 				"line_ending": "Unix"
 			}
 		},
@@ -35,7 +27,7 @@
 			"file": "intvaltimes.m",
 			"settings":
 			{
-				"buffer_size": 1507,
+				"buffer_size": 1472,
 				"line_ending": "Unix"
 			}
 		},
@@ -43,7 +35,7 @@
 			"file": "mtimes.m",
 			"settings":
 			{
-				"buffer_size": 11234,
+				"buffer_size": 12862,
 				"line_ending": "Windows"
 			}
 		},
@@ -51,7 +43,7 @@
 			"file": "inv.m",
 			"settings":
 			{
-				"buffer_size": 1576,
+				"buffer_size": 2395,
 				"line_ending": "Windows"
 			}
 		},
@@ -59,15 +51,15 @@
 			"file": "plus.m",
 			"settings":
 			{
-				"buffer_size": 2632,
-				"line_ending": "Windows"
+				"buffer_size": 3461,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "Scalar.m",
 			"settings":
 			{
-				"buffer_size": 28532,
+				"buffer_size": 23076,
 				"line_ending": "Windows"
 			}
 		},
@@ -75,7 +67,7 @@
 			"file": "scaletime.m",
 			"settings":
 			{
-				"buffer_size": 1275,
+				"buffer_size": 1868,
 				"line_ending": "Windows"
 			}
 		},
@@ -83,7 +75,7 @@
 			"file": "subdivide.m",
 			"settings":
 			{
-				"buffer_size": 3995,
+				"buffer_size": 4452,
 				"line_ending": "Windows"
 			}
 		},
@@ -91,7 +83,7 @@
 			"file": "sqrt.m",
 			"settings":
 			{
-				"buffer_size": 2949,
+				"buffer_size": 3238,
 				"line_ending": "Windows"
 			}
 		},
@@ -99,7 +91,7 @@
 			"file": "subsref.m",
 			"settings":
 			{
-				"buffer_size": 2171,
+				"buffer_size": 2234,
 				"line_ending": "Unix"
 			}
 		},
@@ -107,7 +99,7 @@
 			"file": "tailratio.m",
 			"settings":
 			{
-				"buffer_size": 1691,
+				"buffer_size": 2325,
 				"line_ending": "Windows"
 			}
 		},
@@ -115,7 +107,7 @@
 			"file": "scalar.sublime-workspace",
 			"settings":
 			{
-				"buffer_size": 13835,
+				"buffer_size": 14436,
 				"line_ending": "Unix"
 			}
 		},
@@ -123,7 +115,7 @@
 			"file": "scalar.sublime-project",
 			"settings":
 			{
-				"buffer_size": 45,
+				"buffer_size": 84,
 				"line_ending": "Unix"
 			}
 		},
@@ -131,7 +123,7 @@
 			"file": "append.m",
 			"settings":
 			{
-				"buffer_size": 1237,
+				"buffer_size": 2084,
 				"line_ending": "Windows"
 			}
 		},
@@ -139,7 +131,7 @@
 			"file": "bestfitdecay.m",
 			"settings":
 			{
-				"buffer_size": 1747,
+				"buffer_size": 2687,
 				"line_ending": "Windows"
 			}
 		},
@@ -147,7 +139,7 @@
 			"file": "decay.m",
 			"settings":
 			{
-				"buffer_size": 1783,
+				"buffer_size": 2217,
 				"line_ending": "Windows"
 			}
 		},
@@ -155,7 +147,7 @@
 			"file": "exponent.m",
 			"settings":
 			{
-				"buffer_size": 1150,
+				"buffer_size": 1199,
 				"line_ending": "Unix"
 			}
 		}
@@ -192,10 +184,11 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/sk2011/Dropbox/Matlab/SeqODESolver/@Scalar"
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver"
 	],
 	"file_history":
 	[
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/dims.m",
 		"/Users/sk2011/Dropbox/Matlab/SeqODESolver/@Scalar/Scalar.sublime-project",
 		"/Users/sk2011/Dropbox/Matlab/SeqODESolver/@Scalar/Scalar.m",
 		"/Users/sk2011/Dropbox/0DSGRN/DSGRN_work/two_node_spyder.py"
@@ -235,44 +228,16 @@
 	"groups":
 	[
 		{
-			"selected": 14,
+			"selected": 13,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "dims.m",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 104,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Matlab/Matlab.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 14,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "fixtime.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1437,
+						"buffer_size": 1855,
 						"regions":
 						{
 						},
@@ -297,12 +262,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 1,
 					"file": "fouriertaylortimes.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1526,
+						"buffer_size": 1742,
 						"regions":
 						{
 						},
@@ -327,12 +292,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 2,
 					"file": "intvaltimes.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1507,
+						"buffer_size": 1472,
 						"regions":
 						{
 						},
@@ -357,12 +322,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "mtimes.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11234,
+						"buffer_size": 12862,
 						"regions":
 						{
 						},
@@ -387,12 +352,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 4,
 					"file": "inv.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1576,
+						"buffer_size": 2395,
 						"regions":
 						{
 						},
@@ -417,12 +382,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 5,
 					"file": "plus.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2632,
+						"buffer_size": 3461,
 						"regions":
 						{
 						},
@@ -447,12 +412,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 6,
 					"file": "Scalar.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 28532,
+						"buffer_size": 23076,
 						"regions":
 						{
 						},
@@ -477,12 +442,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 7,
 					"file": "scaletime.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1275,
+						"buffer_size": 1868,
 						"regions":
 						{
 						},
@@ -507,12 +472,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 8,
 					"file": "subdivide.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3995,
+						"buffer_size": 4452,
 						"regions":
 						{
 						},
@@ -537,12 +502,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 9,
 					"file": "sqrt.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2949,
+						"buffer_size": 3238,
 						"regions":
 						{
 						},
@@ -567,12 +532,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 10,
 					"file": "subsref.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2171,
+						"buffer_size": 2234,
 						"regions":
 						{
 						},
@@ -597,12 +562,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 11,
 					"file": "tailratio.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1691,
+						"buffer_size": 2325,
 						"regions":
 						{
 						},
@@ -627,12 +592,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 12,
 					"file": "scalar.sublime-workspace",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13835,
+						"buffer_size": 14436,
 						"regions":
 						{
 						},
@@ -656,12 +621,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 13,
 					"file": "scalar.sublime-project",
-					"semi_transient": true,
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 45,
+						"buffer_size": 84,
 						"regions":
 						{
 						},
@@ -684,42 +649,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 14,
 					"file": "append.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1237,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Matlab/Matlab.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 18,
-					"type": "text"
-				},
-				{
-					"buffer": 16,
-					"file": "bestfitdecay.m",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1747,
+						"buffer_size": 2084,
 						"regions":
 						{
 						},
@@ -744,12 +679,12 @@
 					"type": "text"
 				},
 				{
-					"buffer": 17,
-					"file": "decay.m",
+					"buffer": 15,
+					"file": "bestfitdecay.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1783,
+						"buffer_size": 2687,
 						"regions":
 						{
 						},
@@ -774,12 +709,42 @@
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 16,
+					"file": "decay.m",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2217,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Matlab/Matlab.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
 					"file": "exponent.m",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1150,
+						"buffer_size": 1199,
 						"regions":
 						{
 						},
@@ -798,7 +763,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 14,
 					"type": "text"
 				}
 			]

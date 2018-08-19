@@ -1,21 +1,44 @@
 function productObj = mtimes(leftObj,rightObj,varargin)
-% Define multiplication of Scalars with Scalars, Fscalars (double or intval) and BAoperators (multiplication in usual matrix/vector sense). Current implementation only supports dimension-1 surfaces.
+%MTIMES - Define multiplication of Scalars
+%
+%   Syntax:
+%   C = MTIMES(obj, B) is the Scalar convolution product when B is a Scalar truncated to size of obj.
+%
+%   C = MTIMES(T, obj) is the Scalar image of T(obj) when T is an Operator (linear operator over sequence space) truncated to size of obj.
+%
+%   C = MTIMES(a, obj) is the Scalar given by a*obj when a is a double truncated to size of obj.
+%
+%   C = MTIMES(obj, a) is the Scalar given by a*obj = obj*a when a is a double or intval (intvals require right multiplication) truncated to size of obj.
+%
+%   C = MTIMES(A,B, 'Full') returns a Scalar with no truncation.
+%
+%   C = MTIMES(obj, B, 'Recursion') returns on the (m-1)^st coefficient with respect to the first dimension when obj.Truncation(1) = m.
+%
+%   C = MTIMES(A,B, truncationArray) returns a Scalar truncated in each dimension by truncation Array = [N1,...,Nd]).
+%
+%   Inputs:
+%       leftObj - Scalar, double, or Operator
+%       rightObj - Scalar, double, or intval
+%       truncationSize - string (Full or Recursion) or integer vector of length d.
+%
+%   Outputs:
+%       productObj - Scalar
+%
+%   Subfunctions: none
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
-% Written by S. Kepley 03/2017
-% Added support for 1D algebra 06/2017
-% Changed intval products to use FFT 07/2017
-% Reverted back to non-FFT multiplication. Rigorous FFT needs to be impleneted more carefully before using 08/2017
-
-% ---------------------- INPUT ----------------------
-% leftObj Scalar or BAoperator or double or intval: left factor
-% rightObj Scalar or BAoperator or double or intval: right factor
-% varargin{1} = truncation type (string): Use to allow fast multiplication via FFT % when full products aren't needed
-
-% ---------------------- OUTPUT ----------------------
-% productObj: Scalar corresponding to leftObj*rightObj
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 04-Mar-2017; Last revision: 13-Aug-2018
 
 
-if isa(leftObj,'BAoperator') % BAoperator acts on Scalar (left only)
+if isa(leftObj,'Operator') % Operator acts on Scalar (left only)
+    if ~strcmp(rightObj.Basis, 'Taylor')
+        warning('mtimes - only implemented for Taylor basis')
+    end
+
     switch size(obj,1)
         case 1
             Lv = leftObj.Matrix*rightObj.col;
@@ -28,30 +51,44 @@ if isa(leftObj,'BAoperator') % BAoperator acts on Scalar (left only)
                 % productObj = cell2mat(productCell);
             end
     end
+
 elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Scalars (Cauchy product of analytic functions)
+    if ~strcmp(rightObj.Basis, 'Taylor')
+        warning('mtimes - only implemented for Taylor basis')
+    end
+
+    if ~strcmp(leftObj.Basis, 'Taylor')
+        warning('mtimes - only implemented for Taylor basis')
+    end
+    
+    if ~strcmp(leftObj.Basis, rightObj.Basis)
+        error('mtimes - Scalars must have the same basis type')
+    else
+       basis = leftObj.Basis; 
+    end
 
     % this is currently a catch all that needs to be fixed
     if isequal(leftObj.Truncation,[]) || isequal(rightObj.Truncation,[])
         disp('Scalar should never have empty value for Truncation')
-        L = Scalar(leftObj.Coefficient);
-        R = Scalar(rightObj.Coefficient);
-        productObj = Scalar(mtimes(L,R,varargin{:}));
+        L = Scalar(leftObj.Coefficient, basis);
+        R = Scalar(rightObj.Coefficient, basis);
+        productObj = Scalar(mtimes(L, R, varargin{:}), basis);
         productObj.Truncation = [];
-
+        return
     % one factor is a constant function
     elseif (leftObj.Dimension == 0 || rightObj.Dimension == 0)
-        productObj = Scalar(leftObj.Coefficient*rightObj.Coefficient);
-
+        productObj = Scalar(leftObj.Coefficient*rightObj.Coefficient, basis);
+        return
     % products require factors of the same dimension
-    elseif ~isequal(leftObj.Dimension,rightObj.Dimension)
+    elseif ~isequal(leftObj.Dimension, rightObj.Dimension)
         error('Cauchy products for factors of different dimensions is not defined yet')
 
-    % left/right surfaceDimension match. Set product surfaceDimension equal
+    % left/right Dimension match. Set product Dimension equal
     else
-        surfaceDimension = leftObj.Dimension;
+        Dimension = leftObj.Dimension;
     end
 
-    if (nargin > 2); % If both factors have double NumericalClass default behavior is to truncate the product to the same size as obj. Otherwise call with varargin.
+    if (nargin > 2) % If both factors have double NumericalClass default behavior is to truncate the product to the same size as obj. Otherwise call with varargin.
         truncationSize = varargin{1}; % truncation types: {'Fixed','Recursion','Full',ArraySize}
         % 'Fixed' requires two Scalars with double NumericalClass of identical size.
         % 'Recursion' gives fast convolution for computing Taylor coefficient by recursion. Returns only the (M+1)-st coefficient in 1st dimension. Note: Object returned in this case is a double, not a Scalar.
@@ -66,7 +103,7 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
         truncationSize = 'Fixed';
     end
 
-    switch surfaceDimension
+    switch Dimension
         case 1 % ---------------------------------------- 1D SURFACES ----------------------------------
             if strcmp(leftObj.NumericalClass,'intval') || strcmp(rightObj.NumericalClass,'intval')
                 if strcmp(truncationSize,'Recursion')
@@ -79,26 +116,26 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
                     switch truncationSize
                         case 'Fixed'
                             minMode = min([leftObj.Truncation,rightObj.Truncation]);
-                            productObj = Scalar(LR,minMode);
+                            productObj = Scalar(LR, basis, minMode);
                         case 'Full'
-                            productObj = Scalar(LR);
+                            productObj = Scalar(LR, basis);
                         otherwise
-                            productObj = Scalar(LR,truncationSize);
+                            productObj = Scalar(LR, basis, truncationSize);
                     end
                 end
             else
                 switch truncationSize
                     case 'Fixed'
                         productSize = leftObj.Truncation;
-                        productCoefficient = conv([zeros(1,productSize - 1),leftObj.Coefficient],rightObj.Coefficient,'valid');
-                        productObj = Scalar(productCoefficient,productSize,surfaceDimension);
+                        productCoefficient = conv([zeros(productSize - 1, 1); leftObj.Coefficient],rightObj.Coefficient,'valid');
+                        productObj = Scalar(productCoefficient, basis, productSize,Dimension);
                     case 'Recursion'
                         productObj = dot(leftObj.Coefficient,flip(rightObj.Coefficient)); % Returns only the M^th coefficient of L*R
                     case 'Full'
-                        productObj = Scalar(conv(leftObj.Coefficient,rightObj.Coefficient));
+                        productObj = Scalar(conv(leftObj.Coefficient,rightObj.Coefficient), basis);
                     otherwise % specify an integer truncation
-                        productCoefficient = conv(leftObj.Coefficient,rightObj.Coefficient);
-                        productObj = Scalar(productCoefficient,truncationSize);
+                        productCoefficient = conv(leftObj.Coefficient, rightObj.Coefficient);
+                        productObj = Scalar(productCoefficient, basis, truncationSize);
                 end
             end
         case 2 % ---------------------------------------- 2D SURFACES ----------------------------------
@@ -108,15 +145,15 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
                 LR = L*R;
                 switch truncationSize
                     case 'Fixed'
-                        productObj = Scalar(LR,leftObj.Truncation);
+                        productObj = Scalar(LR,leftObj.Truncation, basis);
                     case 'Recursion'
                         minMode = min([leftObj.Truncation;rightObj.Truncation]);
                         mIdx = (LR.e(:,2) == minMode(1) - 1) & (LR.e(:,1) < minMode(2));
                         productObj = LR.c(mIdx)'; % Returns an intval vector, not a Scalar.
                     case 'Full'
-                        productObj = Scalar(LR,leftObj.Truncation + rightObj.Truncation - [1,1]);
+                        productObj = Scalar(LR, basis, leftObj.Truncation + rightObj.Truncation - [1,1]);
                     otherwise
-                        productObj = Scalar(LR,truncationSize);
+                        productObj = Scalar(LR, basis, truncationSize);
                 end
 
             elseif isa(leftObj.Coefficient,'Scalar') && isa(rightObj.Coefficient,'Scalar')
@@ -146,6 +183,7 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
 
                 if strcmp(truncationSize,'Fixed') || strcmp(truncationSize,'Full')
                     productObj = Scalar();
+                    productObj.Basis = basis;
                     productObj.Dimension = leftObj.Dimension;
                     productObj.Coefficient = productCoefficient;
                     productTruncation = [productObj.Coefficient.Truncation];
@@ -158,7 +196,7 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
                 switch truncationSize
                     case 'Fixed'
                         productCoefficient = conv2([zeros(leftObj.Truncation-1),zeros(leftObj.Truncation-[1,0]);zeros(leftObj.Truncation-[0,1]),leftObj.Coefficient],rightObj.Coefficient,'valid');
-                        productObj = Scalar(productCoefficient,size(productCoefficient),surfaceDimension);
+                        productObj = Scalar(productCoefficient, basis, size(productCoefficient), Dimension);
                     case 'FFT'
                         n = leftObj.Truncation + rightObj.Truncation - [1,1];
                         cauchyProduct = ifftn*(fftn(leftObj.Coefficient,n).*fftn(rightObj.Coefficient,n));
@@ -166,11 +204,11 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
                     case 'Recursion' % Object returned in this case is a double, not a Scalar.
                         productObj = conv2([zeros(size(leftObj.Coefficient)-[0,1]),leftObj.Coefficient],rightObj.Coefficient,'valid');
                     case 'Full'
-                        productObj = Scalar(conv2(leftObj.Coefficient,rightObj.Coefficient));
+                        productObj = Scalar(conv2(leftObj.Coefficient, rightObj.Coefficient), basis);
                     otherwise % truncationSize is a specfied size to truncate the product
-                        if length(truncationSize) == leftObj.Dimension;
+                        if length(truncationSize) == leftObj.Dimension
                             productFull = mtimes(leftObj,rightObj,'Full');
-                            productObj = Scalar(productFull.Coefficient,truncationSize);
+                            productObj = Scalar(productFull.Coefficient, basis, truncationSize);
                         else
                             error('Multiplication of these Scalars is undefined')
                         end
@@ -182,23 +220,34 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
                     modes = leftObj.Truncation;
                     padTo = leftObj.Truncation + rightObj.Truncation - [1,1,1];
                     fullCoefficient = ifftn(fftn(leftObj.Coefficient,padTo).*fftn(rightObj.Coefficient,padTo));
-                    productObj = Scalar(fullCoefficient(1:modes(1),1:modes(2),1:modes(3)));
+                    productObj = Scalar(fullCoefficient(1:modes(1), basis, 1:modes(2),1:modes(3)));
                 case 'Recursion'
                     modes = leftObj.Truncation;
                     padTo = leftObj.Truncation + rightObj.Truncation - [1,1,1];
                     fullCoefficient = ifftn(fftn(leftObj.Coefficient,padTo).*fftn(rightObj.Coefficient,padTo));
-                    productObj = Scalar(squeeze(fullCoefficient(modes(1),1:modes(2),1:modes(3))));
+                    productObj = Scalar(squeeze(fullCoefficient(modes(1), basis, 1:modes(2),1:modes(3))));
             end
     end
 elseif isa(leftObj,'Scalar') % Scalar multiplication with Fscalar (right)
-    productObj = Scalar(leftObj.Coefficient*rightObj,leftObj.Truncation);
+    basis = leftObj.Basis;
+    productObj = Scalar(leftObj.Coefficient*rightObj, basis, leftObj.Truncation);
 elseif isa(rightObj,'Scalar')% Scalar multiplication with Fscalar (left)
+    basis = rightObj.Basis;
+
     try
-        productObj = Scalar(leftObj*rightObj.Coefficient,rightObj.Truncation);
+        productObj = Scalar(leftObj*rightObj.Coefficient, basis, rightObj.Truncation);
     catch ME
         if strcmp(ME.message, 'Undefined function ''times'' for input arguments of type ''Scalar''.')
             disp('Left multiplication by intval is undefined. Use right multiplication only.')
         end
     end
 end
-end
+end % mtimes
+
+% Revision History:
+%{
+24-Jun-2017 - support for 1-dimensional Scalars
+02-Jul-2017 - change multiplication to FFT based convolution
+19-Aug-2017 - reverted back to non-FFT multiplication. Rigorous and numeric FFT needs to be impleneted more carefully before it can be trusted.
+13-Aug-2018 - updated for Scalar class
+%}

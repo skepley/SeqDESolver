@@ -10,8 +10,8 @@ function reObj = real(obj)
 %   email: shane.kepley@rutgers.edu
 %   Date: 08-Aug-2018; Last revision: 08-Aug-2018
 
-reObj = Scalar(real(obj.Coefficient));
-end % end real
+reObj = Scalar(real(obj.Coefficient), obj.Basis);
+end %  real
 
 % Revision History:
 %{

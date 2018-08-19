@@ -25,13 +25,13 @@ switch obj.NumericalClass
 
 case 'intval'
   if length(obj) > 1 % vectorized method
-      doubleObj = repmat(Scalar(0, obj(1).Truncation), size(obj));
+      doubleObj = repmat(Scalar(0, obj.Basis, obj(1).Truncation), size(obj));
       for j = 1:length(obj)
           doubleObj(j) = double(obj(j));
       end
 
   else % convert a single Scalar
-      doubleObj = Scalar(mid(obj.Coefficient));
+      doubleObj = Scalar(mid(obj.Coefficient), obj.Basis);
   end
 
 case 'double'
@@ -40,8 +40,8 @@ case 'double'
 case 'Scalar'
   error('Scalar to double conversion is not yet implemented')
 
-end % end switch
-end % end double
+end %  switch
+end %  double
 
 
 

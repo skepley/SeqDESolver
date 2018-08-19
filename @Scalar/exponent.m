@@ -16,21 +16,20 @@ function [coefficient, exponent] = exponent(obj)
 %       exponent - exponent array of size: #length(coefficients)-by-Scalar dimension
 %
 %   Subfunctions: none
-%   Classes required: @Scalar
+%   Classes required: none
 %   Other m-files required: none
 %   MAT-files required: none
 %
 %   Author: Shane Kepley
 %   email: shane.kepley@rutgers.edu
-%   Date: 04-Aug-2018; Last revision: 04-Aug-2018
+%   Date: 04-Aug-2018; Last revision: 13-Aug-2018
 
-%%
 coefficient = reshape(obj.Coefficient,[],1); % coefficient as column vector
 
 % exponent arrays
 switch obj.Dimension
     case 1
-        exponent = (0:obj.Truncation(1))';
+        exponent = (0:obj.Truncation(1)-1)';
 
     case 2
         [var1Exp,var2Exp] = meshgrid(0:obj.Truncation(1) -1,0:obj.Truncation(2) -1);
@@ -39,5 +38,9 @@ switch obj.Dimension
     otherwise
         error('not implemented yet')
 end
-end % end exponent
+end %  exponent
 
+% Revision History:
+%{
+13-Aug-2018 - updated for Scalar class
+%}

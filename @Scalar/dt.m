@@ -21,20 +21,20 @@ function dObj_dt = dt(obj)
 
 if obj.Dimension ==1 % space is 0-dim
     C = 0:obj.Truncation(1)-1;
-    dObj_dt = Scalar(C.*obj.Coefficient);
+    dObj_dt = Scalar(C.*obj.Coefficient, obj.Basis);
 
 elseif obj.Dimension == 2 % space is 1-dim
     C = repmat((0:obj.Truncation(1)-1),obj.Truncation(2),1)';
-    dObj_dt = Scalar(C.*obj.Coefficient);
+    dObj_dt = Scalar(C.*obj.Coefficient, obj.Basis);
 
 elseif obj.Dimension ==3 % space is 2-dim
     C = zeros(obj.Truncation);
     for j = 2:obj.Truncation(1)
         C(j,:,:) = (j-1)*ones(obj.Truncation(2:3));
     end
-    dObj_dt = Scalar(C.*obj.Coefficient);
+    dObj_dt = Scalar(C.*obj.Coefficient, obj.Basis);
 end
-end % end dt
+end %  dt
 
 % Revision History:
 %{

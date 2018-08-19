@@ -1,6 +1,6 @@
 function varargout = subsref(obj,S)
-%SUBSREF - implements subscript reference for Scalar class (finally)
-
+%SUBSREF - implements subscript reference for Scalars
+%
 %   Subfunctions: none
 %   Classes required: @Scalar
 %   Other m-files required: none
@@ -8,7 +8,7 @@ function varargout = subsref(obj,S)
 %
 %   Author: Shane Kepley
 %   email: shane.kepley@rutgers.edu
-%   Date: 25-Jul-2018; Last revision: 25-Jul-2018
+%   Date: 25-Jul-2018; Last revision: 02-Aug-2018
 
 
 % disable user defined subsref until it is fixed. Bad case: type order is: '()','.','()'
@@ -56,5 +56,9 @@ end
 if length(S) > 1
     [varargout{1:nargout}] = subsref(varargout{:}, S(2:end));
 end
-end % end subsref
+end %  subsref
 
+% Revision History:
+%{
+02-Aug-2018 - disabled subscripted reference. Some cases need to be fixed.
+%}

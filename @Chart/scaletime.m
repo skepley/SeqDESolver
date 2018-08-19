@@ -1,18 +1,18 @@
 function scaletime(chart, scaleBy)
 %SCALETIME - Rescale time for a given chart based on single-step options
-    
+
 %   Syntax:
 %       chart.SCALETIME(scaleBy)
 %
 %   Description:
 %       SCALETIME() - 	% determine time scaling, L such that the time-1 map of the rescaled flow is equivalent to the time-L map of the given flow.
-%    
+%
 %   Inputs:
 %       chart - instance of the Chart class
 %       scaleBy - scalar double
 %
 %   Subfunctions: none
-%   Classes required: @Chart, @BAscalar
+%   Classes required: @Chart, @Scalar
 %   Other m-files required: none
 %   MAT-files required: none
 %
@@ -26,19 +26,19 @@ if ~strcmp(chart.Weight,'ones') % Assumption is that ell^1 weights should always
     error('Weights other than one are not supported.')
 end
 
-if strcmp(chart.CoefType, 'intval')
+if strcmp(chart.NumericalClass, 'intval')
     warning('Interval coefficients should never be rescaled this way.')
 end
 % 	if chart.FixTau == 0 % take a timestep based on coefficient decay but not to exceed MaxTau units
 % 		rowDecay = chart.decay;
-% 		scaleByDecay = (1e-16/rowDecay)^(1/(chart.Modes(1)-1));
+% 		scaleByDecay = (1e-16/rowDecay)^(1/(chart.Truncation(1)-1));
 % 		scaleBy = min([scaleByDecay,chart.MaxTau]);
 % 	else % take a fixed timestep
 % 		scaleBy = chart.FixTau;
 % 	end
 
-chart.Coordinate.scaletime(scaleBy/chart.Tau) % call BAscalar/scaletime on phase coordinates
+chart.Coordinate.scaletime(scaleBy/chart.Tau) % call Scalar/scaletime on phase coordinates
 chart.TimeSpan(2) = chart.TimeSpan(1) + chart.FlowDirection*scaleBy; % update chart timespan
 chart.Tau = scaleBy; % update chart timestep
 
-end % end scaletime
+end %  scaletime

@@ -1,5 +1,5 @@
 function varargout = eval(chart,data,varargin)
-%EVAL - Evaluate a chart on space/time domain 
+%EVAL - Evaluate a chart on space/time domain
 %
 %   Inputs:
 %       chart - instance of Chart class
@@ -10,7 +10,7 @@ function varargout = eval(chart,data,varargin)
 %       [Gamma_d,...,Gamma_d] - Evaluations for each scalar coordinate
 %
 %   Subfunctions: none
-%   Classes required: @Chart, @BAscalar
+%   Classes required: @Chart, @Scalar
 %   Other m-files required: none
 %   MAT-files required: none
 %
@@ -33,24 +33,24 @@ absoluteSpace = p.Results.AbsoluteSpace;
 
 %% evaluate data specified in local coordinates
 if ~isempty(data)
-    if nargout == chart.PhaseDimension
-        for j =1:chart.PhaseDimension
+    if nargout == chart.Dimension(2)
+        for j =1:chart.Dimension(2)
             varargout{j} = real(chart.Coordinate(j).eval(data));
         end
-        
+
     elseif nargout ==1
         varargout{1} = {};
-        for j =1:chart.PhaseDimension
+        for j =1:chart.Dimension(2)
             varargout{1}{j} = real(chart.Coordinate(j).eval(data));
         end
     else
         error('nargout for eval all should be 1 or d')
     end
-    
+
 else
     for j = 1:nargout
         varargout{j} = [];
     end
-end % end if
-end % end eval
+end %  if
+end %  eval
 

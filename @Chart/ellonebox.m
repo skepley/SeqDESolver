@@ -7,15 +7,15 @@ function varargout = ellonebox(chart)
 %
 %   Description:
 %       ELLONEBOX() - description
-%    
+%
 %   Inputs:
 %       chart - instance of the Chart class
 %
 %   Outputs:
-%       box - 1-by-n intval 
+%       box - 1-by-n intval
 %
-%   Other m-files required: @Chart, @BAscalar
-%   Subfunctions: BAscalar/norm
+%   Other m-files required: @Chart, @Scalar
+%   Subfunctions: Scalar/norm
 %   MAT-files required: none
 %
 %   Author: Shane Kepley
@@ -26,12 +26,12 @@ if length(chart) > 1 % vectorized version
     for j = 1:length(chart)
         chart(j).ellonebox();
     end
-    
+
 elseif ~isempty(chart.ellOneBox) % ellOneBox is already stored
     box = chart.ellOneBox;
-    
+
 else % computer box for a single chart
-    center = arrayfun(@(j)chart.Coord(j).Coef(1,1), 1:chart.PhaseDimension); % constant term in chart expansion
+    center = arrayfun(@(j)chart.Coord(j).Coef(1,1), 1:chart.Dimension(2)); % constant term in chart expansion
     fullNorm = chart.Coord.norm;
     radius = fullNorm - abs(center) + chart.StepError; % chart.StepError = 0 for nonrigorous timesteps.
     box = midrad(center, radius)';

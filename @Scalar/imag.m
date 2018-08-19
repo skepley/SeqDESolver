@@ -1,4 +1,4 @@
-function [output1,output2] = imag(input1,input2,input3,varargin)
+function imagObj = imag(obj)
 %IMAG - return the imaginary part of a Scalar.
 %
 %   Subfunctions: none
@@ -10,8 +10,8 @@ function [output1,output2] = imag(input1,input2,input3,varargin)
 %   email: shane.kepley@rutgers.edu
 %   Date: 08-Aug-2018; Last revision: 08-Aug-2018
 
-imObj = Scalar(imag(obj.Coefficient));
-end % end imag
+imObj = Scalar(imag(obj.Coefficient), obj.Basis);
+end %  imag
 
 % Revision History:
 %{

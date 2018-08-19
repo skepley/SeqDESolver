@@ -22,12 +22,12 @@ function intvalObj = intval(obj)
 switch obj.NumericalClass
   case 'double'
     if length(obj) > 1 % vectorized method
-        intvalObj = repmat(Scalar(0, obj(1).Truncation), size(obj));
+        intvalObj = repmat(Scalar(0, , obj.Basis, obj(1).Truncation), size(obj));
         for j = 1:length(obj)
             intvalObj(j) = obj(j).intval;
         end
     else % convert a single Scalar
-        intvalObj = Scalar(midrad(obj.Coefficient, 0));
+        intvalObj = Scalar(midrad(obj.Coefficient, 0), obj.Basis);
 
         % replaced midrad(0,0) with midrad(0,eps) so that intLab will keep placeholder zeros
         intvalObj.Coefficient(obj.Coefficient == 0) = midrad(0, eps);
@@ -36,8 +36,8 @@ switch obj.NumericalClass
     intvalObj = obj;
   case 'Scalar'
     error('Scalar to intval conversion is not yet implemented')
-end % end switch
-end % end intval
+end %  switch
+end %  intval
 
 % Revision History:
 %{

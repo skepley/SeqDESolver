@@ -1,19 +1,36 @@
-function varargout = subdivide(obj,parmRange,varargin)
-% rigorously subdivide a surface given by a Taylor series into subsurfaces
+function varargout = subdivide(obj, parmRange, varargin)
+%SUBDIVIDE - rigorously subdivide a Scalar parameterization into a piecewise Scalar parameterization.
+%
+%   Syntax:
+%       subScalar = SUBDIVIDE(obj, parmRange) is a vector of Scalars of length nDivs which is the number of rows of parmRange.
+%           Each row of parmRange specifies a subset of D^d on which to parameterize each subScalar.
+%
+%       subScalar = SUBDIVIDE(obj, parmRange, t0) assumes that obj is a parameterization in time with respect to the first dimension. obj is first
+%           evaluated at tau = t0 and the resulting (d-1)-dimensional Scalar is subdivided into subScalars.
+%           a piecewise parameterizationsubdivided
+%
+%       [subScalar, subDomain] = SUBDIVIDE(obj, parmRange) subDomain is a nDivs-by-(2d) array of material coordinates with respect to [-1,1]^d. These coordinates
+%           are consecutively inherited by successive calls of subdivide.
+%
+%   Inputs:
+%       obj - Scalar
+%       parmRange - nDivs-by-(2d) array
+%       t0 - double
+%
+%   Outputs:
+%       newParm - vector of Scalars
+%       newMTC - double array
+%
+%   Subfunctions: none
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
-% Written by S. Kepley 01/2017
-% Rigorous subdivision 14  Jun 2017
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 18-Jan-2017; Last revision: 13-Aug-2018
 
-% ---------------------- INPUT ----------------------
-% obj (Scalar): vector of Scalars parameterizered on [-1,1]^d (space only) or [-1,1]^{d+1} (space/time)
-% parmRange (double): m-by-(2d) array = [row1;row2;...;rowm] where each row is of the form [s11,s12,s21,s22,...,sm1,sm2] corresponds to the closed rectangle [s11,s12]x[s21,s22]x...x[sm1,sm2] in R^d
-% varargin{1} = t0 (double): Use if obj is space/time parameterization to subdivide obj(s,t0) which is parameterizered on [-1,1]^d
-
-% ---------------------- OUTPUT ----------------------
-% subDomain (double): m-by-(2d) array of material coordinates with respect to [-1,1]^d (allows tracking of multiple subdivisions in the larger spatial domain)
-% subSurface (Scalar): m-by-length(obj) array where subSurface(i,j) = obj(j) defined on Ri and rescaled to [-1,1]^d
-
-% parse input and varargin
+% parse input
 p = inputParser;
 addRequired(p,'obj')
 addRequired(p,'parmRange')
@@ -101,6 +118,11 @@ switch nargout
         varargout{1} = newMTC; % new material coordinates
         varargout{2} = newParm;
 end
-end
+end % subdivide
 
+% Revision History:
+%{
+14-Jun-2017 - implemented rigorous subdivision for Taylor parameterizations
+13-Aug-2018 - updated for Scalar class
+%}
 

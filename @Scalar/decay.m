@@ -1,25 +1,35 @@
 function coefDecay = decay(obj)
-% returns norm of last Taylor coefficient collapsed onto first variable.
+% returns norm of last coefficient collapsed onto first variable.
+%
+%   coefDecay = DECAY(oby) returns the ell_1 norm of the last coefficient in Scalar with respect to the first variable.
+%
+%   Inputs:
+%       obj - Scalar
+%
+%   Outputs:
+%       coefDecay - double
+%
+%   Subfunctions: none
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 09-Jun-2017; Last revision: 13-Aug-2018
 
-% Written S. Kepley 06/2017
-% Updated for Scalar coefficient type 07/2017
+%   TODO:
+%   Add support for measuring decay in other dimensions.
+%   Add support for Fourier and Chebyshev coefficients.
 
-% TODO: Add support for measuring decay in other dimensions.
-
-% ---------------------- INPUT ----------------------
-% obj is a Scalar
-% varargin is dimension in which to measure the decay
-
-% ---------------------- OUTPUT ----------------------
-% decay of the coefficients in the required dimension
-
-if numel(obj) > 1 % obj is a vector of Scalars
-    rowDecay = arrayfun(@(j)obj(j).decay,1:numel(obj));
+if numel(obj) > 1 % vectorized method
+    rowDecay = arrayfun(@(j)obj(j).decay, 1:numel(obj));
     coefDecay = reshape(rowDecay,size(obj));
-elseif strcmp(obj.NumericalClass,'Scalar')
+
+elseif strcmp(obj.NumericalClass, 'Scalar')
     coefDecay = obj.Coefficient(end).norm();
-else
+
+else % single Scalar
     switch obj.Dimension
         case 0
             coefDecay = abs(obj.Coefficient(1));
@@ -31,23 +41,31 @@ else
             end
         case 2
             if strcmp(obj.Weight,'ones')
-                finalCoefficient = Scalar(obj.Coefficient(end,:),obj.Truncation(2:end));
+                finalCoefficient = Scalar(obj.Coefficient(end,:), obj.Basis, obj.Truncation(2:end));
                 coefDecay = finalCoefficient.norm();
             else
-                finalCoefficient = Scalar(obj.Coefficient(end,:),obj.Truncation(2:end),obj.Weight(2:end));
+                finalCoefficient = Scalar(obj.Coefficient(end,:), obj.Basis, obj.Truncation(2:end),obj.Weight(2:end));
                 coefDecay = finalCoefficient.norm();
             end
         case 3
             if strcmp(obj.Weight,'ones')
-                finalCoefficient = Scalar(obj.Coefficient(end,:,:),obj.Truncation(2:end));
+                finalCoefficient = Scalar(obj.Coefficient(end,:,:), obj.Basis, obj.Truncation(2:end));
                 coefDecay = finalCoefficient.norm();
             else
-                finalCoefficient = Scalar(obj.Coefficient(end,:,:),obj.Truncation(2:end),obj.Weight(2:end));
+                finalCoefficient = Scalar(obj.Coefficient(end,:,:), obj.Basis, obj.Truncation(2:end), obj.Weight(2:end));
                 coefDecay = finalCoefficient.norm();
             end
-    end
+    end % switch
+
     if isa(obj.Coefficient,'intval')
         coefDecay = mid(coefDecay);
     end
 end
-end
+end % decay
+
+% Revision History:
+%{
+02-Jul-2017 - support for Scalar coefficient type
+13-Aug-2018 - updated for Scalar class
+%}
+

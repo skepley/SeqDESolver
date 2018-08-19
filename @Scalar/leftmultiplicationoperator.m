@@ -19,21 +19,27 @@ function operator = leftmultiplicationoperator(obj)
 %   email: shane.kepley@rutgers.edu
 %   Date: 08-Aug-2018; Last revision: 08-Aug-2018
 
-if strcmp(obj.NumericalClass,'intval')
+if ~strcmp(obj.Basis, 'Taylor')
+    warning('leftmultiplicationoperator - only implemented for Taylor basis')
+end
+
+
+if strcmp(obj.NumericalClass, 'intval')
     warning('this method is untested with interval valued Scalars')
 end
+
 
 padblock = [zeros(obj.Truncation(1)-1, obj.Truncation(2)-1), zeros(obj.Truncation(1)-1,obj.Truncation(2));...
     zeros(obj.Truncation(1), obj.Truncation(2)-1),obj.Coefficient];
 
-leftMultiplier(obj.Truncation(1), obj.Truncation(2)) = Scalar(0, obj.Truncation);
+leftMultiplier(obj.Truncation(1), obj.Truncation(2)) = Scalar(0, obj.Basis, obj.Truncation);
 for j = 1:obj.Truncation(1)
     for k = 1:obj.Truncation(2)
-        leftMultiplier(obj.Truncation(1)+1-j,obj.Truncation(2)+1-k) = Scalar(padblock(j:j+obj.Truncation(1)-1,k:k+obj.Truncation(2)-1));
+        leftMultiplier(obj.Truncation(1)+1-j,obj.Truncation(2)+1-k) = Scalar(padblock(j:j+obj.Truncation(1)-1, k:k+obj.Truncation(2)-1), obj.Basis);
     end
 end
 operator = Operator(leftMultiplier, obj.Truncation);
-end % end leftmultiplicationoperator
+end % leftmultiplicationoperator
 
 % Revision History:
 %{

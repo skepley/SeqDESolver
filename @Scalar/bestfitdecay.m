@@ -1,15 +1,38 @@
-function r  = bestfitdecay(obj)
-% Returns the best approximate geometric sequence fitted to the given coefficents by linear least squares regression.
+function geometricDecay  = bestfitdecay(obj)
+%BESTFITDECAY - Returns the best approximate geometric sequence fitted to the given coefficents by linear least squares regression.
+%
+%   geometricDecay = BESTFITDECAY(obj) is a vector of ratios, [r_1,...,r_d] with length obj.Dimension. These ratios are the best fit of Scalar.Coefficient to
+%       a model geometric series with geometric rate r_i in the ith direction obtained by log-linear regression.
+%
+%       1D - If the coefs are of the form a = (A, Ar, Ar^2, ... Ar^{n-1}), then log a lies on the line y(x) = log A + log(r)*x.
+%           The best fit (log) linear line is the minimizer of the sum of squared residuals S = sum(r_i^2) = sum(log(a_i) - beta_0 - i*beta_1)^2.
+%       2D - The returned ratios minimize S = sum_j sum_i (log(a_ij) - beta_0 - j*beta_1 - i*beta_2)^2 where j is the column index, and i is the row index.
+%
+%   Inputs:
+%       obj - Scalar of dimension d
+%
+%   Outputs:
+%       geometricDecay - double of length d
+%
+%   Subfunctions: none
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
-% Written by S.K. 01/2018
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 18-Jan-2018; Last revision: 13-Aug-2018
 
-% 1D - If the coefs are of the form a = (A, Ar, Ar^2, ... Ar^{n-1}), then log a lies on the line y(x) = log A + log(r)*x. The best fit (log) linear line is the minimizer of the sum of squared residuals
-% S = sum(r_i^2) = sum(log(a_i) - beta_0 - i*beta_1)^2. In 2D, the returned ratios minimize S = sum_j sum_i (log(a_ij) - beta_0 - j*beta_1 - i*beta_2)^2 where j is the column index, and i is the row index.
+if ~strcmp(obj.Basis, 'Taylor')
+    warning('bestfitdecay - fitting to a geometric series is only reasonable for Taylor series')
+end
 
-if length(obj) > 1
+
+if length(obj) > 1 % vectorize method
     for j = 1:length(obj)
-       r(j,:) = bestfitdecay(obj(j));
+       geometricDecay(j,:) = bestfitdecay(obj(j));
     end
+
 else
     if obj.Dimension ==1 % coef is a 1D coefficient vector
         logCoefficient = log(abs(obj.Coefficient)); % best fit geometric sequence is linear best fit for log(sequence)
@@ -19,7 +42,8 @@ else
         rhs = [sum(logCoefficient);sum(X.*logCoefficient)];
         beta = M\rhs;
         % A0 = exp(beta(1)); % constant multiple for geometric sequence
-        r = exp(beta(2)); % best fit ratio for geometric sequence
+        geometricDecay = exp(beta(2)); % best fit ratio for geometric sequence
+
     elseif obj.Dimension == 2
         logCoefficient = log(abs(obj.Coefficient));
         [M,N] = size(logCoefficient);
@@ -37,8 +61,15 @@ else
         XTY = X'*Y;
         beta = XTX\XTY;
         % A0 = exp(beta(1));
-        r = exp(beta(2:3));
+        geometricDecay = exp(beta(2:3));
+
     else
         error('not implemented for higher dimensions')
     end
-end
+end % bestfitdecay
+
+% Revision History:
+%{
+13-Aug-2018 - updated for Scalar class
+%}
+

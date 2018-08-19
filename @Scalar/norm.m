@@ -28,8 +28,11 @@ if numel(obj) > 1 % vectorized norm
         scalarNorm(j) = obj(j).norm(varargin{:});
     end
     scalarNorm = reshape(scalarNorm,size(obj));
-
+    
 else
+    if ~strcmp(obj.Basis, 'Taylor')
+        warning('norm - may not be appropriate for non-Taylor basis')
+    end
     if strcmp(obj.Weight,'ones')
         if nargin == 2
             normDim = varargin{1};
@@ -37,16 +40,16 @@ else
         else
             scalarNorm = sum(abs(obj.Coefficient(:)));
         end
-
+        
     elseif obj.Dimension ~= 2
         error('norm not implemented for this weight and dimension')
-
+        
     else
         weight_matrix = bsxfun(@(x,y)obj.Weight(1).^(x).*obj.Weight(2).^(y),0:obj.Truncation(2)-1,(0:obj.Truncation(1)-1)');
         scalarNorm = sum(dot(weight_matrix,abs(obj.Coefficient)));
     end
 end
-end % end norm
+end %  norm
 
 % Revision History:
 %{

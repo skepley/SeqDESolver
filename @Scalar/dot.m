@@ -44,7 +44,7 @@ else
     end
     dotProduct = ptProduct.sum;
 end
-end % end dot
+end %  dot
 
 % Revision History:
 %{

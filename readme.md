@@ -1,24 +1,24 @@
 
 # SeqDE Overview
-A Matlab toolbox for rigorous numerical methods based on the "sequence space" approach. Invariant sets are parameterized as coefficient sequences in some analytic function space and a proof of existence and rigorous error bounds come in the form of a-posteriori analytic error estimates. 
+A Matlab toolbox for rigorous numerical methods based on the "sequence space" approach. Invariant sets are parameterized as coefficient sequences in some analytic function space and a proof of existence and rigorous error bounds come in the form of a-posteriori analytic error estimates.
 
-See REFS for further details and examples. 
+See REFS for further details and examples.
 
 The current code is incomplete. An initial working version will be available by 01-Oct-2018
 
 
-# Classes 
-The basic usage revolves around several classes which efficiently perform and store important computations. Each class is briefly outlined below. 
+# Classes
+The basic usage revolves around several classes which efficiently perform and store important computations. Each class is briefly outlined below.
 
 ## Scalar
-The scalar class gives a finite approximation representation for analytic functions of the form, $f: D^d \to \mathbb{R}^n$ where $D^d$ is the unit ball in $\mathbb{C}^d$. 
+The scalar class gives a finite approximation representation for analytic functions of the form, $f: D^d \to \mathbb{R}^n$ where $D^d$ is the unit ball in $\mathbb{C}^d$.
 
 ### Properties
 * Basis: Taylor, Fourier, Chebyshev
 * Coefficient: A $d$-dimensional array of coefficients
-* Dimension: The value of $d$ which is equivalent to the number of nontrivial dimensions in the coefficient array. 
+* Dimension: The value of $d$ which is equivalent to the number of nontrivial dimensions in the coefficient array.
 * NumericalClass: double or intval (requires IntLab toolbox for Matlab)
-* Truncation: Integer vector of length $d$ denoting the number of coefficients in each direction. 
+* Truncation: Integer vector of length $d$ denoting the number of coefficients in each direction.
 
 
 ### Hidden Properties
@@ -26,24 +26,34 @@ The scalar class gives a finite approximation representation for analytic functi
 
 
 ### Methods
+* append
+* bestfitdecay
+* decay
 * dot
 * double
 * dt
 * eval
 * exponent
+* fixtime
 * fouriertaylortimes
 * imag
 * intlabpoly
 * intval
 * intvaltimes
+* inv
 * leftmultiplicationoperator
 * minus
+* mtimes
+* ndims
 * norm
 * plus
 * real
+*
 * shift
 * sqrt
+* subdivide
 * subsref
+* tailratio
 * uminus
 
 ### Usage
@@ -59,8 +69,7 @@ The scalar class gives a finite approximation representation for analytic functi
 * TimeDirection
 
 ### Hidden Properties
-* PhaseDimension
-* SurfaceDimension
+* Dimension
 * Weight
 * InitialData
 * SubDivisionDepth

@@ -1,11 +1,32 @@
-function invObj = inv(obj,varargin)
-% Compute b = 1/A for specified A by solving the differential equation u' = -A'u^2
+function invObj = inv(obj)
+%INV - Compute inverse of a Scalar by automatic differentiation
+%
+%   invObj = INV(obj) returns a Scalar, B, which satisfies B*obj = 1. This is carried out by automatic differentiation by solving
+%   the differential equation u' = -obj'*u^2. invObj has same size and numericalClass.
+%
+%   Inputs:
+%       obj - Scalar
+%
+%   Outputs:
+%       invObj - Scalar
+%
+%   Subfunctions: none
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
-% TODO: Add validation and make the argument recursive.
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 04-May-2018; Last revision: 13-Aug-2018
 
-% Written by S. Kepley 05/2017
-% Updated surfaceDimension 06/2017
-% Support for Scalar coef 07/2017
+%   TODO:
+%   Add validation and make the argument recursive.
+%   Implement for Fourier/Chebyshev bases.
+
+if ~strcmp(obj.Basis, 'Taylor')
+    warning('inv - only implemented for Taylor basis')
+end
+
 
 if strcmp(obj.NumericalClass,'Scalar')
     const = obj.Coefficient(1).Coefficient(1);
@@ -20,12 +41,12 @@ end
 switch obj.Dimension
     case 0 % inverse of a real scalar
         a0 = obj.Coefficient(1);
-        invObj = Scalar(1/a0);
+        invObj = Scalar(1/a0, obj.Basis);
 
     case 1 % inverse of 1d power series
         ddtObj = obj.ds;
         a0 = obj.Coefficient(1);
-        invObj = Scalar(1/a0,obj.Truncation);
+        invObj = Scalar(1/a0,, obj.Basis, obj.Truncation);
         for m = 1:obj.Truncation - 1
             uu = invObj*invObj;
             Aprime = ddtObj.Coefficient(m:-1:1);
@@ -37,16 +58,23 @@ switch obj.Dimension
         deg = size(obj.Coefficient);
         ddtObj = obj.dt;
         ddtObj.Coefficient = [ddtObj.Coefficient(2:end,:);zeros(1,deg(2))]; % This padding shouldn't be necessary.
-        a0 = Scalar(obj.Coefficient(1,:));
-        invObj = Scalar(inv(a0),[1,a0.Truncation]);
+        a0 = Scalar(obj.Coefficient(1,:), obj.Basis);
+        invObj = Scalar(inv(a0),, obj.Basis, [1,a0.Truncation]);
         for m = 1:obj.Truncation(1)-1
             uu = invObj*invObj;
-            Aprime = Scalar(ddtObj.Coefficient(1:m,:),uu.Truncation);
+            Aprime = Scalar(ddtObj.Coefficient(1:m,:),, obj.Basis, uu.Truncation);
             newCoefficient = -(1/m)*mtimes(uu,Aprime,'Recursion');
             invObj.append(newCoefficient);
         end
     otherwise
         error('not yet implemented')
 end
-end
+end % inv
+
+% Revision History:
+%{
+02-Jun-2017 - support for 2-dimensional Scalars
+09-Jul-2017 - support for Scalar coefficient type
+13-Aug-2018 - updated for Scalar class
+%}
 

@@ -1,22 +1,44 @@
-function evalObj = fixtime(obj,tau)
-% collapse Taylor series onto fixed time t
+function evalObj = fixtime(obj, tau)
+%FIXTIME - partial evaluation of Scalar along the first (time) dimension.
+%
+%   evalObj = FIXTIME(obj, tau) returns a Scalar of dimension (d-1) corresponding to evaluation of obj along its first dimension. In usual cases
+%       this dimension is utilized by the time variable so that this evaluation is the time-tau map for the Scalar.
+%       IMPORTANT NOTE: This evaluation is in MATERIAL time, not real time.
+%
+%   Inputs:
+%       obj - Scalar
+%       tau - double
+%
+%   Outputs:
+%       evalObj - Scalar
+%
+%   Subfunctions: none
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
-% Written S. Kepley 04/2017
-% Added 2D funcionality 05/15/17
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 23-Apr-2017; Last revision: 13-Aug-2018
 
-% ---------------------- INPUT ----------------------
+%   TODO:
+%   support for Fourier and Chebyshev bases
+%   support for evaluation along other dimensions
+%   support for specifying real time evaluation
 
+if ~strcmp(obj.Basis, 'Taylor')
+    warning('fixtime - only implemented for Taylor basis')
+end
 
-% ---------------------- OUTPUT ----------------------
 
 if length(obj) ==1 % obj is a single Scalar
     switch obj.Dimension
         case 2
             time_vector = bsxfun(@power,tau,0:size(obj.Coefficient,1)-1);
-            evalObj = Scalar(time_vector*obj.Coefficient);
+            evalObj = Scalar(time_vector*obj.Coefficient, obj.Basis);
         case 3
             if tau==1
-                evalObj = Scalar(squeeze(sum(obj.Coefficient,1))); % sum over the first dimension is equivalent to evaluation at tau = 1.
+                evalObj = Scalar(squeeze(sum(obj.Coefficient,1)), obj.Basis); % sum over the first dimension is equivalent to evaluation at tau = 1.
             elseif tau == -1
 
             else
@@ -30,18 +52,11 @@ else % obj is a vector of Scalars
         evalObj(j) = obj(j).fixtime(tau);
     end
 
-%     newCoefficient = arrayfun(@(j)obj(j).fixtime(tau),1:length(obj),'UniformOutput',false);
-%     evalObj = newCoefficient{1};
-%     for j = 2:length(newCoefficient)
-%         if obj(j).Dimension == 1
-%             evalObj(j) = newCoefficient{j};
-%         else
-%             evalObj = cat(1,evalObj,newCoefficient{j});
-%         end
-%     end
-%
-%     if obj(1).Dimension == 1
-%         evalObj = reshape(evalObj,size(obj)); % output shape matches input shape
-%     end
 end
-end
+end % fixtime
+
+% Revision History:
+%{
+15-May-2017 - support for 2-dimensional Scalars
+13-Aug-2018 - updated for Scalar class
+%}

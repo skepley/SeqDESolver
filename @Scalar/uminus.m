@@ -11,7 +11,7 @@ function minusObj = uminus(obj)
 %   Date: 08-Aug-2018; Last revision: 08-Aug-2018
 
 minusObj = -1*obj;
-end % end uminus
+end %  uminus
 
 % Revision History:
 %{

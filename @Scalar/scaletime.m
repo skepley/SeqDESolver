@@ -1,18 +1,36 @@
-function scaletime(obj,L)
-% rescales time
+function scaledObj = scaletime(obj, L)
+%SCALETIME - rescale domain of Scalar in the first (time) dimension by z --> Lz.
+%
+%   scaledObj = SCALETIME(obj, L) returns a Scalar which defines a function f_L: D^d ---> R which is equivalent to the
+%       function defined by obj, f:[-L,L] x D^{d-1} ---> R.
+%
+%   Inputs:
+%       obj - Scalar
+%       L - field scalar (double or intval)
+%
+%   Outputs:
+%       scaledObj - Scalar
+%
+%   Subfunctions: none
+%   Classes required: none
+%   Other m-files required: none
+%   MAT-files required: none
 
-% Written by S. Kepley 05/2017
-% Updated for Scalar coefs 07/2017
+%   Author: Shane Kepley
+%   email: shane.kepley@rutgers.edu
+%   Date: 04-May-2017; Last revision: 13-Aug-2018
 
-% ---------------------- INPUT ----------------------
-% obj (Scalar): A Taylor series with 1st coordinate (time) scaled to t = 1
-% L (double): The new time rescaling
+if ~strcmp(obj.Basis, 'Taylor')
+    warning('scaletime - only implemented for Taylor basis')
+end
 
-% ---------------------- OUTPUT ----------------------
-% obj (Scalar): The rescaled object
+
+if ~strcmp(obj.NumericalClass, 'intval')
+    warning('scaletime - rescaling interval coefficients may cause excessive wrapping.')
+end
+
 
 if numel(obj) > 1 % vectorized norm
-    %                 scale_matr = Scalar(repmat(bsxfun(@power,abs(L),[0:obj(1).Truncation(1)-1]'),[1,obj(1).Truncation(2)]));
     for j = 1:length(obj)
         obj(j).scaletime(L);
     end
@@ -38,3 +56,9 @@ else
     end
 end
 end
+
+% Revision History:
+%{
+02-Jul-2018 - support for Scalar coefficients
+13-Aug-2018 - updated for Scalar class
+%}

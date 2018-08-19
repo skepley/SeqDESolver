@@ -1,4 +1,4 @@
-function minusObj = minus(obj,rightObj)
+function minusObj = minus(obj, rightObj)
 %MINUS - Define subtraction for Scalar class
 %
 %   Subfunctions: none
@@ -11,7 +11,7 @@ function minusObj = minus(obj,rightObj)
 %   Date: 08-Aug-2018; Last revision: 08-Aug-2018
 
 minusObj = obj + -rightObj;
-end % end minus
+end %  minus
 
 % Revision History:
 %{
