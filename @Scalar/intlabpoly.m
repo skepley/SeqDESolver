@@ -65,8 +65,6 @@ else % convert a single Scalar
 end % if
 end % intlabpoly
 
-
-
 % Revision History:
 %{
 08-Aug-2018 - moved out of classdef file

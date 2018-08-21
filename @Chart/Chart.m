@@ -3,6 +3,7 @@ classdef Chart < handle
     
     properties
 		Coordinate; % length d vector of Scalars of dimension 1 + Dimension
+        Dimension; % [d, n]
         Truncation; % [N1,...,Nd]
         TimeSpan; % [t0, t1]
         SpatialSpan; % material coordinates with respect to [1,1]^d
@@ -13,7 +14,6 @@ classdef Chart < handle
     end
 
     properties(Hidden = 1)
-		Dimension; % [d, n]
 		Weight = 'ones'; % ell^1 space weights
         InitialData; % length n vector of Scalars of dimension d
         SubDivisionDepth; % recursion depth for use by subdivision algorithms

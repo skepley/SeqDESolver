@@ -14,29 +14,30 @@ function setinitialdata(obj, initialData, basis)
 %
 %   Author: Shane Kepley
 %   email: shane.kepley@rutgers.edu
-%   Date: 01-Jul-2018; Last revision: 14-Aug-2018
+%   Date: 01-Jul-2018; Last revision: 20-Aug-2018
 
 % append initial data to chart
-obj.InitialData = Scalar();
-switch obj.Dimension(1)-1
-    case 0 % initial data is a point
-        for j = 1:obj.Dimension(2)
-            obj.InitialData(j) = Scalar(initialData(j,:), basis);
-        end
-    case 1 % initial data is an arc
-        for j = 1:obj.Dimension(2)
-            obj.InitialData(j) = Scalar(initialData(j,:), basis, obj.Truncation(2:end));
-        end
-    case 2 % initial data is a 2-d surface
-        for j = 1:obj.Dimension(2)
-            obj.InitialData(j) = Scalar(initialData(j,:,:), basis, obj.SpatialTruncation(2:end));
-        end
-    otherwise
-        error('not implemented for higher dimensions')
+if isa(initialData, 'double') || isa(initialData, 'intval')
+    S = size(initialData);
+    if isequal(S(1), obj.Dimension(2)) % initialData(j,:) is a phase space coordinate
+        coefDataSubs = mat2cell(S(2:end), 1, length(S)-1);
+        coefData = mat2cell(initialData, ones(1, S(1)), coefDataSubs{:}); % convert to length-n cell vector
+        obj.InitialData = Scalar(coefData, basis);
+    else
+        error('The first dimension of initialData must be the same as the phase space')
+    end
+    
+elseif isa(initialData, 'Scalar')
+    
+elseif isa(initialData, 'cell')
+    
+else
+    error('Initial data type not supported')
 end
 end
 
 % Revision History:
 %{
 14-Aug-2018 - updated for Scalar class
+20-Aug-2018 - updated for changed to Scalar class constructor
 %}

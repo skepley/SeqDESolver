@@ -1,7 +1,5 @@
-function BAnorm = norm(obj)
-    phaseNorms = obj.var.norm;
-    DFNorms = obj.DFvar.norm;
-    otherNorms = obj.othervar.norm;
-    BAnorm = max([max(phaseNorms(:)),max(DFNorms(:)),max(otherNorms(:))]);
-    obj.Norm = BAnorm;
+function chartNorm = norm(obj)
+%NORM - returns the ell_1 norm of a chart
+
+chartNorm = norm(obj.Coordinate);
 end

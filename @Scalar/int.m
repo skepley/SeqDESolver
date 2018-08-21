@@ -6,6 +6,8 @@ function intObj = int(obj, varargin)
 %       has been shifted and rescaled by 1/m. This is embedded into the truncation space which has 1 additional coefficient and the first
 %       coefficient is padded by zero.
 %
+%       intObj = INT(obj, n) integrates the Scalar n times. 
+%
 %   Inputs:
 %       obj - Scalar
 %
@@ -35,25 +37,15 @@ if nIntegration > 1
     obj = int(obj, nIntegration-1);
 end
 
-switch obj.Dimension
-    case 1        
-        switch obj.NumericalClass
-            case 'intval'
-                scaleCoefficient = objCoefficient./intval(1:obj.Truncation(1))';
-                shiftCoefficient = [intval(0); scaleCoefficient];
-            case 'double'
-                scaleCoefficient = obj.Coefficient./(1:obj.Truncation(1))';
-                shiftCoefficient = [0; scaleCoefficient];
-            otherwise
-                error('int')
-        end
-        
-    case 2
-        intObj = Scalar([zeros(1,obj.Truncation(2));obj.Coefficient(1:obj.Truncation(1)-1,:)], obj.Basis);
-        error('int - this has not been updated for 2-d yet')
-        
-    otherwise
-        error('shift method not implemented in higher dimensions')
+M = obj.Truncation(1);
+if strcmp(obj.NumericalClass, 'intval')
+    scaleBy = intval(repmat((1:M)', [1, obj.Truncation(2:end)]));
+    scaleCoefficient = obj.Coefficient./scaleBy;
+    shiftCoefficient = cat(1, intval(zeros([1, obj.Truncation(2:end)])), scaleCoefficient);
+elseif strcmp(obj.NumericalClass, 'double')
+    scaleBy = repmat((1:M)', [1, obj.Truncation(2:end)]);
+    scaleCoefficient = obj.Coefficient./scaleBy;
+    shiftCoefficient = cat(1, zeros([1, obj.Truncation(2:end)]), scaleCoefficient);
 end
 intObj = Scalar(shiftCoefficient, obj.Basis);
 end %  shift
@@ -62,4 +54,5 @@ end %  shift
 %{
 08-Aug-2018 - moved out of classdef file
 18-Aug-2018 - changed name from "shift" to "int", added coefficient rescaling to the old shifting operation
+20-Aug-2018 - support for arbitrary dimensions
 %}

@@ -196,7 +196,9 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar') % Multiplication of 2 Sca
                 switch truncationSize
                     case 'Fixed'
                         productCoefficient = conv2([zeros(leftObj.Truncation-1),zeros(leftObj.Truncation-[1,0]);zeros(leftObj.Truncation-[0,1]),leftObj.Coefficient],rightObj.Coefficient,'valid');
-                        productObj = Scalar(productCoefficient, basis, size(productCoefficient), Dimension);
+                        % UPDATED FOR SCALAR CONSTRUCTOR productObj = Scalar(productCoefficient, basis, size(productCoefficient), Dimension);
+                        productObj = Scalar(productCoefficient, basis, size(productCoefficient));
+
                     case 'FFT'
                         n = leftObj.Truncation + rightObj.Truncation - [1,1];
                         cauchyProduct = ifftn*(fftn(leftObj.Coefficient,n).*fftn(rightObj.Coefficient,n));

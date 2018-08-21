@@ -32,7 +32,11 @@ end
 
 polyCoef = intval(coef);
 radiiPoly = polynom(polyCoef, 'r'); % radii polynomial
-rGuess = roots(mid(polyCoef)); % numerical estimate for true roots.
+try
+    rGuess = roots(mid(polyCoef)); % numerical estimate for true roots.
+catch ME
+    disp('here')
+end
 if nargout ==1 % return only smallest root
     rTrue = verifypoly(radiiPoly, min(rGuess));
     varargout{1} = rTrue;
