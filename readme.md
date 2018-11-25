@@ -4,9 +4,6 @@ A Matlab toolbox for rigorous numerical methods based on the "sequence space" ap
 
 See REFS for further details and examples.
 
-The current code is incomplete. An initial working version will be available by 01-Oct-2018
-
-
 # Classes
 The basic usage revolves around several classes which efficiently perform and store important computations. Each class is briefly outlined below.
 
