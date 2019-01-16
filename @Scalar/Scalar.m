@@ -100,9 +100,6 @@ classdef Scalar
                             obj = coefData; % return a deep copy
                             
                         else % new embedding specified
-                            if isequal(coefData.Dimension, 1)
-                                coefData.Coefficient = coefData.Coefficient'; % for 1-d Scalars free up first index for appnding dimensions
-                            end
                             obj = coefData; % copy of the Scalar
                             obj.Truncation = varargin{1};
                             obj.Dimension = length(obj.Truncation);
@@ -139,7 +136,6 @@ classdef Scalar
                             end
                             obj.Coefficient = coefArray;
                         end
-
                         
                     otherwise % coefficient specifed as double or intval array
                         obj.NumericalClass = class(coefData); % intval or double
@@ -159,21 +155,11 @@ classdef Scalar
                             end
                             obj.Coefficient = coefData;
                         end
-                        
-                        % reshape any 1-dim Scalar coefficients into column vector
-                        if isequal(obj.Dimension, 1)
-                            obj.Coefficient = reshape(obj.Coefficient, [],1); %
-                        end
                 end % switch class(coefData)
             end % if nargin > 0
         end %  class constructor
         
-        
-        
-        
-        
-        
-        
+
         %% -------------------- METHOD REPAIR SHOP --------------------
         % The following methods need to be updated and thoroughly checked before using.
         
@@ -274,7 +260,6 @@ classdef Scalar
     
     %% STATIC METHODS
     methods(Static)
-        
         function embedCoef = embed(coefData, truncation)
             % pads coefficient with zeros to achieve specified truncation size
             
@@ -316,7 +301,6 @@ classdef Scalar
             zeroScalar = Scalar(zeros(varargin{:}), basis);
         end
         
-        
         function newCoef = flipcoef(coefData, idx)
             % flip a coefficient array along each specified index
             if isequal(length(idx),1)
@@ -325,6 +309,39 @@ classdef Scalar
                 newCoef = Scalar.flipcoef(flip(coefData, idx(end)), idx(1:end-1)); % flip and recurse
             end
         end
+        
+        function truncSubs = trunc2subs(varargin)
+            % given a truncation row vector [N1,...,Nd] returns a cell array of indices {1:N1,1:N2,...,1:Nd}
+            % given vectors [n1,...,nd], [N1,...,Nd] returns a cell array {n1:N1,...,nd:Nd}
+            
+            if nargin == 1
+                truncHigh = varargin{1};
+                truncLow = ones(size(truncHigh));
+            else
+                [truncLow, truncHigh] = varargin{:};
+            end
+            truncSubs = arrayfun(@(L,H)L:H,truncLow, truncHigh, 'UniformOutput', false);
+        end
+        
+        function dimension = dims(coefArray)
+            % return the true dimension of coefficient array
+            fullDim = size(coefArray);
+            trueDim = fullDim(fullDim > 1); % remove singleton dimensions
+            if isempty(trueDim)
+                dimension = 0;
+            else
+                dimension = length(trueDim);
+            end
+        end
+        
+        function [a,b] = commonsize(a,b)
+            % resizes two arrays to their smallest common embedding by padding with zeros.
+            szA = Scalar.trunc2subs(size(a)+1, size(b));
+            szB = Scalar.trunc2subs(size(b)+1, size(a));
+            a(szA{:}) = 0;
+            b(szB{:}) = 0;
+        end
+        
     end %  static methods
 end %  classdef
 

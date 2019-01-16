@@ -1,5 +1,5 @@
-function [coefficient, exponent] = exponent(obj)
-%EXPONENT - Return a vector of coefficients and exponents for specified Scalar
+function varargout = exponent(obj)
+%EXPONENT - Return a Scalar as an array of coefficients and exponents
 %
 %   Syntax:
 %       output = EXPONENT(input1, input2)
@@ -22,25 +22,35 @@ function [coefficient, exponent] = exponent(obj)
 %
 %   Author: Shane Kepley
 %   email: shane.kepley@rutgers.edu
-%   Date: 04-Aug-2018; Last revision: 13-Aug-2018
+%   Date: 04-Aug-2018; Last revision: 20-Aug-2018
 
-coefficient = reshape(obj.Coefficient,[],1); % coefficient as column vector
+if isequal(obj.Dimension, 0)
+    coefficient = obj.Coefficient;
+    exponent = 0;
+else
+    coefficient = reshape(obj.Coefficient, [], 1); % coefficient as column vector
+    % exponent array
+    exponVector = arrayfun(@(dim)0:dim-1,obj.Truncation, 'UniformOutput', false);
+    exponCell = cell(1, obj.Dimension);
+    [exponCell{:}] = ndgrid(exponVector{:});
+    for iDim = 1:obj.Dimension
+        exponent(:, iDim) = reshape(exponCell{iDim}, [], 1);
+    end
+end
 
-% exponent arrays
-switch obj.Dimension
+switch nargout
     case 1
-        exponent = (0:obj.Truncation(1)-1)';
-
+        structOut.Coefficient = coefficient;
+        structOut.Exponent = exponent;
+        varargout{1} = structOut;
     case 2
-        [var1Exp,var2Exp] = meshgrid(0:obj.Truncation(1) -1,0:obj.Truncation(2) -1);
-        exponent = [reshape(var2Exp,[],1), reshape(var1Exp,[],1)];
-
-    otherwise
-        error('not implemented yet')
+        varargout{1} = coefficient;
+        varargout{2} = exponent;
 end
 end %  exponent
 
 % Revision History:
 %{
 13-Aug-2018 - updated for Scalar class
+20-Aug-2018 - support for arbitrary dimensions
 %}

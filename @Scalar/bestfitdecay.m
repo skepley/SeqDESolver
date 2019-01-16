@@ -23,18 +23,17 @@ function geometricDecay  = bestfitdecay(obj)
 %   email: shane.kepley@rutgers.edu
 %   Date: 18-Jan-2018; Last revision: 13-Aug-2018
 
-if ~strcmp(obj.Basis, 'Taylor')
-    warning('bestfitdecay - fitting to a geometric series is only reasonable for Taylor series')
-end
-
-
 if length(obj) > 1 % vectorize method
     for j = 1:length(obj)
        geometricDecay(j,:) = bestfitdecay(obj(j));
     end
-
 else
-    if obj.Dimension ==1 % coef is a 1D coefficient vector
+    
+    if ~strcmp(obj.Basis, 'Taylor')
+        warning('bestfitdecay - fitting to a geometric series is only reasonable for Taylor series')
+    end
+    
+    if obj.Dimension == 1 % coef is a 1D coefficient vector
         logCoefficient = log(abs(obj.Coefficient)); % best fit geometric sequence is linear best fit for log(sequence)
         N = length(logCoefficient);
         X = 0:N-1;
@@ -43,10 +42,12 @@ else
         beta = M\rhs;
         % A0 = exp(beta(1)); % constant multiple for geometric sequence
         geometricDecay = exp(beta(2)); % best fit ratio for geometric sequence
-
+        
     elseif obj.Dimension == 2
-        logCoefficient = log(abs(obj.Coefficient));
-        [M,N] = size(logCoefficient);
+        logCoefficient = reshape(log(abs(obj.Coefficient))', [], 1);
+        nonZeroIdx = logCoefficient > -Inf;
+        Y = logCoefficient(nonZeroIdx);
+        [M,N] = size(obj.Coefficient);
         S = 0:N-1;
         T = (0:M-1);
 
@@ -55,9 +56,9 @@ else
         X(:,1) = ones(M*N,1);
         X(:,2) = repmat(S',M,1);
         X(:,3) = reshape(repmat(T,N,1),[],1);
+        X = X(nonZeroIdx,:);
         XTX = X'*X; % get symmetric part of X
 
-        Y = reshape(logCoefficient',[],1);
         XTY = X'*Y;
         beta = XTX\XTY;
         % A0 = exp(beta(1));
@@ -71,5 +72,6 @@ end % bestfitdecay
 % Revision History:
 %{
 13-Aug-2018 - updated for Scalar class
+29-Aug-2018 - fixed log-linear regression to handle the case when some coefficients are zero
 %}
 

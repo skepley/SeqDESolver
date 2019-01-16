@@ -22,7 +22,7 @@ function intvalObj = intval(obj)
 switch obj.NumericalClass
   case 'double'
     if length(obj) > 1 % vectorized method
-        intvalObj = repmat(Scalar(0, , obj.Basis, obj(1).Truncation), size(obj));
+        intvalObj = repmat(Scalar(0, obj.Basis, obj(1).Truncation), size(obj));
         for j = 1:length(obj)
             intvalObj(j) = obj(j).intval;
         end

@@ -45,13 +45,11 @@ else % Sum of 2 Scalars
         error('Addition for different surface Dimensions is not defined')
     end
     
-    
     if ~strcmp(leftObj.Basis, rightObj.Basis)
         error('mtimes - Scalars must have the same basis type')
     else
         basis = leftObj.Basis;
     end
-    
     
     if ~isa(leftObj.Coefficient,'Scalar') && ~isa(rightObj.Coefficient,'Scalar') % both summands have double or intval Coefs
         if leftObj.Truncation == rightObj.Truncation

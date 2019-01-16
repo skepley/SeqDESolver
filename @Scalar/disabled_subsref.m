@@ -12,7 +12,7 @@ function varargout = subsref(obj,S)
 
 
 % disable user defined subsref until it is fixed. Bad case: type order is: '()','.','()'
-[varargout{1:nargout}] = builtin('subsref',obj,S);
+[varargout{1:nargout}] = builtin('subsref', obj, S);
 return
 
 %% slice into subfields/methods via matlab builtin

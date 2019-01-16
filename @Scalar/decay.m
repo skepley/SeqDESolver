@@ -36,9 +36,9 @@ end % decay
 function sumDim = sumdim(coef, dimension)
 % sum across each dimension specified
 if isequal(length(dimension), 1)
-    sumDim = sum(coef, dimension);
+    sumDim = sum(abs(coef), dimension);
 else
-    sumDim = sumdim(sum(coef,dimension(end)), dimension(1:end-1)); % sum last dimension and recurse
+    sumDim = sumdim(sum(abs(coef),dimension(end)), dimension(1:end-1)); % sum last dimension and recurse
 end
 end
 
