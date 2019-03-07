@@ -16,14 +16,17 @@ function coefDecay = decay(obj)
 
 %   Author: Shane Kepley
 %   email: shane.kepley@rutgers.edu
-%   Date: 09-Jun-2017; Last revision: 13-Aug-2018
+%   Date: 09-Jun-2017; Last revision: 16-Jan-2019
 
 %   TODO:
 %   Add support for Fourier and Chebyshev coefficients.
 
 if numel(obj) > 1 % vectorized method
-    rowDecay = arrayfun(@(j)obj(j).decay, 1:numel(obj));
-    coefDecay = reshape(rowDecay, size(obj));
+    if isrow(obj)
+       error('decay output only tested for columns of Scalars') 
+    end
+    rowDecay = arrayfun(@(j)obj(j).decay, 1:numel(obj), 'UniformOutput', false);
+    coefDecay = cell2mat(rowDecay);
     
 elseif strcmp(obj.NumericalClass, 'Scalar')
     coefDecay = obj.Coefficient(end).norm();
@@ -35,7 +38,10 @@ end % decay
 
 function sumDim = sumdim(coef, dimension)
 % sum across each dimension specified
-if isequal(length(dimension), 1)
+
+if isequal(length(dimension), 0) % return absolute value of vector
+    sumDim = abs(coef);
+elseif isequal(length(dimension), 1) % sum specified dimension and return
     sumDim = sum(abs(coef), dimension);
 else
     sumDim = sumdim(sum(abs(coef),dimension(end)), dimension(1:end-1)); % sum last dimension and recurse
@@ -47,5 +53,6 @@ end
 02-Jul-2017 - support for Scalar coefficient type
 13-Aug-2018 - updated for Scalar class
 21-Aug-2018 - support for arbitrary dimensions
+16-Jan-2019 - fixed the vectorization. Required removing support for vectorization on row vectors of Scalars.
 %}
 

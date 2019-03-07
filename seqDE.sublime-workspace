@@ -1,0 +1,255 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Users/sk2011/DSGRN/software/AlgebraicGeometry/scripts/ParameterSample",
+			"settings":
+			{
+				"buffer_size": 7535,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar"
+	],
+	"file_history":
+	[
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Operator/Operator.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/decay.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/double.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/dt.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/fixtime.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/fouriertaylortimes.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/intval.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/imag.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/inv.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/leftmultiplicationoperator.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/plus.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/real.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/Scalar.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/shift.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/sqrt.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/tailratio.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Chart/setinitialdata.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Chart/Chart.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/intvaltimes.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/mtimes.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/scaletime.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/subdivide.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/readme.md",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/append.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/bestfitdecay.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/exponent.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/subsref.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/scalar.sublime-workspace",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/scalar.sublime-project",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Chart/ellonebox.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Chart/eval.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqDESolver/@Scalar/dims.m",
+		"/Users/sk2011/Dropbox/Matlab/SeqODESolver/@Scalar/Scalar.sublime-project",
+		"/Users/sk2011/Dropbox/Matlab/SeqODESolver/@Scalar/Scalar.m",
+		"/Users/sk2011/Dropbox/0DSGRN/DSGRN_work/two_node_spyder.py"
+	],
+	"find":
+	{
+		"height": 56.0
+	},
+	"find_in_files":
+	{
+		"height": 135.0,
+		"where_history":
+		[
+			"<project>",
+			"/Users/sk2011/Dropbox/Matlab/SeqODESolver/@Scalar/*.m~"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"Scalar(",
+			"Truncation",
+			"Scalar(",
+			"SpatialTruncation",
+			"Scalar(",
+			"Dimension",
+			"PhaseDimension",
+			"SurfaceDimension",
+			"Scalar"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"truncation",
+			"Dimension(2)",
+			"Dimension"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/sk2011/DSGRN/software/AlgebraicGeometry/scripts/ParameterSample",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7535,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1176.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 32.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "seqDE.sublime-project",
+	"replace":
+	{
+		"height": 96.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 277.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

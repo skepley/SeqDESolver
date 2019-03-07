@@ -268,25 +268,47 @@ classdef Scalar
                 return
             end
             
-            if isa(coefData, 'double')
-                embedCoef = zeros(truncation);
-            elseif isa(coefData, 'intval')
-                embedCoef = intval(zeros(truncation));
-            end
-            
             % coefficient subscript reference
-            truncDim = length(truncation);
+            truncDim = length(truncation); % true dimension of the coefficient array
             coefDim = length(size(coefData));
-            coefTrunc = min(size(coefData), truncation(1 + truncDim - coefDim : end));
-            coefSubs = arrayfun(@(dim)1:coefTrunc(dim), 1:length(coefTrunc), 'UniformOutput', false);
+            dimDeficit = truncDim - coefDim; % number of dimensions missing from the the coefficient data
             
-            % embedding subscript reference
-            missingDim = ones(1, length(truncation) - coefDim); % padded dimensions
-            subTruncation = [missingDim, coefTrunc]; % padded dimensions append indices to the left
-            padSubs = arrayfun(@(dim)1:subTruncation(dim), 1:length(subTruncation), 'UniformOutput', false);
-            
-            % set coefficients
-            embedCoef(padSubs{:}) = coefData(coefSubs{:});
+            if dimDeficit >= 0
+                % Handle the case that the truncation vector is longer than the number of dimensions in coefData. This embeds the coefficient data
+                % into a space whose dimension is specified by the truncation vector by padding additional dimensions with initial size = 1.
+                
+                if isa(coefData, 'double') % initialize coefficient array of the correct size
+                    embedCoef = zeros(truncation);
+                elseif isa(coefData, 'intval')
+                    embedCoef = intval(zeros(truncation));
+                end
+                coefTrunc = min(size(coefData), truncation(1 + truncDim - coefDim : end));
+                coefSubs = arrayfun(@(dim)1:coefTrunc(dim), 1:length(coefTrunc), 'UniformOutput', false);
+                
+                % embedding subscript reference
+                missingDim = ones(1, length(truncation) - coefDim); % padded dimensions
+                subTruncation = [missingDim, coefTrunc]; % padded dimensions append indices to the left
+                padSubs = arrayfun(@(dim)1:subTruncation(dim), 1:length(subTruncation), 'UniformOutput', false);
+                
+                % set coefficients
+                embedCoef(padSubs{:}) = coefData(coefSubs{:});
+            elseif isequal(truncDim, 1) && isequal(dimDeficit, -1)
+                % deficit is negative should happen only if the dimension is 1 so the coefficient data is a row or column vector which MATLAB
+                % thinks has dimension 2.
+                
+                if isa(coefData, 'double') % initialize coefficient array of the correct size
+                    embedCoef = zeros(1, truncation);
+                elseif isa(coefData, 'intval')
+                    embedCoef = intval(zeros(1, truncation));
+                end
+                embedCoef(1:min(truncation, length(coefData))) = coefData(1:min(truncation, length(coefData))); % slice coefficient data into array
+                
+                if iscolumn(coefData)
+                    embedCoef = embedCoef'; % reshape to match coefficient data
+                end
+            else
+                error('Number of truncation dimensions is underspecified')
+            end
         end % embed
         
         
@@ -350,7 +372,7 @@ end %  classdef
 11-Jul-2017 - Support for interval and Scalar coefficients added.
 15-Aug-2017 - Reverted FFT based convolution to a classical algorithm. FFT is faster but numerically unstable, especially for intval
     coefficients.
-08-Aug-2018 - Class completely overhauled and renamed from Scalar to SCalar. Numerous improvements including:
+08-Aug-2018 - Class completely overhauled and renamed from BAScalar to Scalar. Numerous improvements including:
    full class code refactorization and organization of class folder
    class inheritance changed from handle to value
    support for additional bases (Fourier or Chebyshev)
@@ -364,6 +386,8 @@ end %  classdef
     1-dimensional Scalar coefficients are strictly column vectors
     bug fixes for embedding Scalars into truncation spaces
     addition of overloaded zeros, randi methods
+16-Jan-2019 - Fixed a bug in the embed static method when initializing 1-dimensional Scalars and specifying a truncation size. Bug fixes for
+    decay, bestfitdecay, and embed methods. Details in their respective files. 
 %}
 
 

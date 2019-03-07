@@ -67,7 +67,7 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar')
     if nargin == 2 && isequal(leftObj.Truncation, rightObj.Truncation) % default behavior is embedding into the same truncation space
         truncMode = arrayfun(@(dim)1:dim, leftObj.Truncation, 'UniformOutput',false); %{1:N1, 1:N2,..., 1:Nd}
         convTruncation = leftObj.Truncation;
-    elseif nargin > 2 && isa(varargin{1}, 'double') % specified truncation
+    elseif nargin > 2 && isa(varargin{1}, 'double') % specify truncation indices explicitly as {idx1, idx2,...,idxd}
         [truncMode{1:nargin-2}] = varargin{:}; 
         convTruncation = cellfun(@(dim)length(dim), varargin);
     else % truncMode specified by string varargin

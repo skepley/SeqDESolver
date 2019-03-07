@@ -26,18 +26,25 @@ function convCoefficient = doubletimes(leftFactor, rightFactor, varargin)
 %   Date: 22-Aug-2018; Last revision: 22-Aug-2018
 
 % unpack truncation settings
-if nargin == 2 || strcmp(varargin{1}, 'Full')
+if isscalar(leftFactor) || isscalar(rightFactor) % one factor is just a constant
+    truncMode = 'Constant';
+    convCoefficient = leftFactor*rightFactor;
+elseif nargin == 2 || strcmp(varargin{1}, 'Full') % default is to return the full convolution including higher order terms
     truncMode = 'Full';
     dims = size(leftFactor);
     truncation = dims(dims > 1);
     dimension = sum(dims > 1);
 else
-    truncMode = 'Partial';
+    truncMode = 'Partial'; % special truncation modes
     fullConvSize = size(leftFactor) + size(rightFactor) - 1;
-    [truncSize{1:nargin-2}] = varargin{:};
-    validConv = arrayfun(@(idx)truncSize{idx}(truncSize{idx} <= fullConvSize(idx)), 1:length(fullConvSize), 'UniformOutput', false);
+    [truncSize{1:nargin-2}] = varargin{:}; % A cell array of the form {1:N1, 1:N2,..., 1:Nd} specifying which coefficients to keep
+    if isequal(length(truncSize),1) && isequal(length(fullConvSize),2) % Handle MATLAB reporting vectors as dimension 2
+        validConv = {truncSize{1} <= max(fullConvSize)};
+    else % compare specified truncation indices against size of full convolution in each dimension
+        validConv = arrayfun(@(idx)truncSize{idx}(truncSize{idx} <= fullConvSize(idx)), 1:length(fullConvSize), 'UniformOutput', false);
+    end
     dimension = length(truncSize);
-
+    
     if ~isequal(size(leftFactor), size(rightFactor)) % truncated convolution requires same size array
         [leftFactor, rightFactor] = Scalar.commonsize(leftFactor, rightFactor);
     end
