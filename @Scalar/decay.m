@@ -54,5 +54,6 @@ end
 13-Aug-2018 - updated for Scalar class
 21-Aug-2018 - support for arbitrary dimensions
 16-Jan-2019 - fixed the vectorization. Required removing support for vectorization on row vectors of Scalars.
+23-May-2019 - Added support for weighted ell_1 norms so this function works with Fourier or Chebyshev coefficients. 
 %}
 

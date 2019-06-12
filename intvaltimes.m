@@ -48,7 +48,7 @@ switch dimension
         
         % build product exponent and coefficients
         convExponent = 1 + leftExpArray + rightExpArray;
-        coefArray = leftCoefficient*rightCoefficient'; % outer product
+        coefArray = leftCoefficient*rightCoefficient.'; % outer product
         convCoefficient = full(sparse(convExponent, 1, coefArray));
         
         % reshape to input size
@@ -64,7 +64,7 @@ switch dimension
         
         % build product exponent and coefficients
         convExponent = reshape(shiftdim(leftExpArray + rightExpArray, 2), [], dimension); % vectorized outer sum of exponent vectors
-        outerProduct = reshape(rightCoefficient*leftCoefficient', [], 1); % vectorized outer product of coefficient vectors 
+        outerProduct = reshape(rightCoefficient*leftCoefficient.', [], 1); % vectorized outer product of coefficient vectors 
 
         base = 1 + max(convExponent, [], 1);
         radix = [1, base(1:end-1)];
@@ -107,4 +107,5 @@ end
 22-Aug-2018 - support for arbitrary dimensions
     removed from mtimes method. Functionality now takes intval array as input and output. This function is called inside SCalar/mtimes 
     but may be called outside as well.
+19-Mar-2019 - Fixed a bug where complex Cauchy products were wrong. 
 %}

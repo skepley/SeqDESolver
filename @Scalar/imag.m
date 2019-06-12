@@ -1,4 +1,4 @@
-function imagObj = imag(obj)
+function imObj = imag(obj)
 %IMAG - return the imaginary part of a Scalar.
 %
 %   Subfunctions: none

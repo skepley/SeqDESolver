@@ -27,19 +27,16 @@ function varargout = sqrt(obj, varargin)
 %   Date: 04-May-2018; Last revision: 13-Aug-2018
 
 if ~strcmp(obj.Basis, 'Taylor')
-    warning('sqrt - only implemented for Taylor basis')
+    error('sqrt - only implemented for Taylor basis')
 end
-
 
 if strcmp(obj.NumericalClass,'intval')
     warning('sqrt - untested for interval coefficients')
 end
 
-
 if abs(obj.Coefficient(1,1)) < 1e-9
     warning('constant term < 1e-9. square root should not be trusted')
 end
-
 
 if nargin ==2
     branch = varargin{1};
@@ -48,40 +45,73 @@ else
 end
 
 switch obj.Dimension
-    case 0 % sqrt of a real scalar
-        a0 = abs(obj.Coefficient(1));
-        sqrtObj = Scalar(branch*sqrt(a0), obj.Basis);
-        invObj = Scalar(1/sqrtObj.Coefficient(1), obj.Basis);
-
-    case 1 % sqrt of 1d power series
-        dObj = obj.ds;
-        a0 = abs(obj.Coefficient(1));
-        sqrtObj = Scalar(branch*sqrt(a0), obj.Basis, 1,1);
-        invObj = Scalar(1/sqrtObj.Coefficient(1),1,1);
-        for m = 1:obj.Truncation - 1
-            dA = Scalar(dObj.Coefficient(1:m), obj.Basis, invObj.Truncation);
-            dsqrt = dA*invObj; % obj'*
-            uu = invObj*invObj;
-            sqrtNext = .5*(1/m)*dsqrt.Coefficient(m);
-            invNext = .5*(-1/m)*mtimes(uu,dsqrt,'Recursion');
-            sqrtObj.append(sqrtNext);
-            invObj.append(invNext);
+    case 0 % sqrt of a field scalar
+        if isreal(obj.Coefficient(1)) % choose specified branch of real square root
+            x0 = abs(obj.Coefficient(1));
+            sqrtObj = Scalar(branch*sqrt(x0), obj.Basis);
+            invObj = Scalar(1/sqrtObj.Coefficient(1), obj.Basis);
+        else
+            x0 = obj.Coefficient(1); % CHOOSES THE PRINCIPAL BRANCH OF THE COMPLEX SQUARE ROOT
+            sqrtObj = Scalar(sqrt(x0), obj.Basis);
+            invObj = Scalar(1/sqrtObj.Coefficient(1), obj.Basis);
+            warning('Complex valued Scalars always return the principal branch')
         end
+        
+    case 1 % sqrt of 1d power series
+        xDot = obj.dt;
+        
+        if isreal(obj.Coefficient(1))
+            x0 = abs(obj.Coefficient(1)); % |x_0|
+            sqrtObj = Scalar(branch*sqrt(x0), obj.Basis, 1); % y
+            invObj = Scalar(1/sqrtObj.Coefficient(1), obj.Basis, 1); % z
+            % sqrtObj = Scalar(branch*sqrt(x0), obj.Basis, obj.Truncation); % y
+            % invObj = Scalar(1/sqrtObj.Coefficient(1), obj.Basis, obj.Truncation); % z
+            % invObj.Coefficient = reshape(invObj.Coefficient, [], 1); % make into column layout
+        else
+            x0 = obj.Coefficient(1);
+            sqrtObj = Scalar(sqrt(x0), obj.Basis, 1);
+            invObj = Scalar(1/sqrtObj.Coefficient(1), obj.Basis, 1);
+        end
+        
+        % recursively solve differential equation for the coefficients
+        for m = 1:obj.Truncation - 1
+            xDotTruncation = Scalar(xDot.Coefficient(1:m), obj.Basis, invObj.Truncation);
+            % xDotTruncation = Scalar(xDot.Coefficient(1:m), obj.Basis);
+            
+            dsqrt = xDotTruncation*invObj; % xDot*z
+            zz = invObj*invObj; % z*z
+            sqrtNext = (0.5/m)*dsqrt.Coefficient(m); % this is a double
+            invNext = (-0.5/m)*mtimes(zz, dsqrt,m); % this is a Scalar
+            
+            % append next coefficient and increment truncation dimension
+            invObj.Coefficient(end+1) = invNext.Coefficient;
+            sqrtObj.Coefficient(end+1) = sqrtNext;
+            invObj.Truncation(1) = invObj.Truncation(1) + 1;
+            sqrtObj.Truncation(1) = sqrtObj.Truncation(1) + 1;
+        end
+        % reshape to row or column layout to match input
+        invObj.Coefficient = reshape(invObj.Coefficient, size(obj.Coefficient));
+        sqrtObj.Coefficient = reshape(sqrtObj.Coefficient, size(obj.Coefficient));
+        
     case 2 % sqrt of 2d power series
-        dObj = obj.dt;
-        dObj.Coefficient = dObj.Coefficient(2:end,:);
-        a0 = Scalar(obj.Coefficient(1,:) obj.Basis);
-        [sqrtInit,invInit] = sqrt(a0);
-        sqrtObj = Scalar(sqrtInit, obj.Basis, [1,a0.Truncation]);
-        invObj = Scalar(invInit, obj.Basis, [1,a0.Truncation]);
+        xDot = obj.dt;
+        N = obj.Truncation(2);
+        x0 = Scalar(obj.Coefficient(1,:), obj.Basis);
+        [y0,z0] = sqrt(x0);
+        sqrtObj = Scalar(y0, obj.Basis, [1, x0.Truncation]);
+        invObj = Scalar(z0, obj.Basis, [1, x0.Truncation]);
         for m = 1:obj.Truncation(1)-1
-            dA = Scalar(dObj.Coefficient(1:m,:), obj.Basis, invObj.Truncation);
-            dsqrt = dA*invObj;
-            uu = invObj*invObj;
-            sqrtNext = .5*(1/m)*dsqrt.Coefficient(m,:);
-            invNext = .5*(-1/m)*mtimes(uu,dsqrt,'Recursion');
-            sqrtObj.append(sqrtNext);
-            invObj.append(invNext);
+            xDotTruncation = Scalar(xDot.Coefficient(1:m,:), obj.Basis, invObj.Truncation);
+            dsqrt = xDotTruncation*invObj; % xDot*z
+            zz = invObj*invObj; % z*z
+            sqrtNext = (0.5/m)*dsqrt.Coefficient(m,:); % this is a double
+            invNext = (-0.5/m)*mtimes(zz, dsqrt, m, 1:N); % this is a Scalar
+            
+            % append next coefficient and increment truncation dimension
+            invObj.Coefficient(end+1,:) = invNext.Coefficient;
+            sqrtObj.Coefficient(end+1,:) = sqrtNext;
+            invObj.Truncation(1) = invObj.Truncation(1) + 1;
+            sqrtObj.Truncation(1) = sqrtObj.Truncation(1) + 1;
         end
     otherwise
         error('sqrt not implemented for this dimension')
@@ -101,4 +131,6 @@ end
     support for lower dimensional square roots
     added option to return inv(obj) which is computed as a by product of automatic differentiation
 13-Aug-2018 - updated for Scalar class
+Marchish? 2019 - Fixed several bugs with the new Scalar class.
+19-May-2019 - Added support for complex valued Scalar square roots. This only chooses the principal branch.
 %}

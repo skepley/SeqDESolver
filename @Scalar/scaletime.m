@@ -20,33 +20,31 @@ function scaledObj = scaletime(obj, L)
 %   email: shane.kepley@rutgers.edu
 %   Date: 04-May-2017; Last revision: 13-Aug-2018
 
-if ~strcmp(obj.Basis, 'Taylor')
+if ~strcmp(obj(1).Basis, 'Taylor')
     warning('scaletime - only implemented for Taylor basis')
 end
 
 
-if ~strcmp(obj.NumericalClass, 'intval')
-    warning('scaletime - rescaling interval coefficients may cause excessive wrapping.')
-end
-
+% if strcmp(obj(1).NumericalClass, 'intval')
+%     warning('scaletime - rescaling interval coefficients may cause excessive wrapping.')
+% end
 
 if numel(obj) > 1 % vectorized norm
+    scaledObj = Scalar;
     for j = 1:length(obj)
-        obj(j).scaletime(L);
+        scaledObj(j) = obj(j).scaletime(L);
     end
+    scaledObj = reshape(scaledObj, size(obj));
 elseif obj.Truncation(1) ==1
     error('obj.Truncation should not equal 1') % rule out constant with respect to time
-elseif isa(obj.Coefficient,'Scalar')
-    for k = 1:obj.Truncation(1)
-        obj.Coefficient(k).scaletime(L^(k-1));
-    end
 else
     switch obj.Dimension
         case 1
-            obj.Coefficient = abs(L)*obj.Coefficient;
+            scaledObj = Scalar(abs(L)*obj.Coefficient, obj.Basis);
         case 2
-            obj.Coefficient = repmat(bsxfun(@power,abs(L),[0:obj.Truncation(1)-1]'),[1,obj.Truncation(2)]).*obj.Coefficient;
+            scaledObj = Scalar(repmat(bsxfun(@power,abs(L),(0:obj.Truncation(1)-1)'),[1,obj.Truncation(2)]).*obj.Coefficient, obj.Basis);
         case 3
+            error('Not fixed for dimensions 3 and above')
             scaleCoefficient = @(j)L^(j-1).*obj.Coefficient(j,:,:);
             for j = 1:obj.Truncation(1)
                 obj.Coefficient(j,:,:) = scaleCoefficient(j);

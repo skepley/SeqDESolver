@@ -54,37 +54,53 @@ elseif isa(leftObj,'Scalar') && isa(rightObj,'Scalar')
     if ~strcmp(leftObj.Basis, rightObj.Basis)
         error('mtimes - Scalar multiplication requires same basis')
     end
-    if ~strcmp(leftObj.Basis, 'Taylor')
-        error('mtimes - this multiplication is only implemented for Taylor coefficients')
-    else
-        convBasis = 'Taylor';
-    end
+    
     if ~isequal(leftObj.Dimension, rightObj.Dimension)
         error('mtimes - Scalar multiplication requires Scalars of the same dimension')
     end
     
-    % set truncation mode
-    if nargin == 2 && isequal(leftObj.Truncation, rightObj.Truncation) % default behavior is embedding into the same truncation space
-        truncMode = arrayfun(@(dim)1:dim, leftObj.Truncation, 'UniformOutput',false); %{1:N1, 1:N2,..., 1:Nd}
-        convTruncation = leftObj.Truncation;
-    elseif nargin > 2 && isa(varargin{1}, 'double') % specify truncation indices explicitly as {idx1, idx2,...,idxd}
-        [truncMode{1:nargin-2}] = varargin{:}; 
-        convTruncation = cellfun(@(dim)length(dim), varargin);
-    else % truncMode specified by string varargin
-        truncMode = {varargin{1}}; % when objects have different truncations return full convolution
-        convTruncation = leftObj.Truncation + rightObj.Truncation - 1;
-    end
-    
-    % compute coefficients of linear discrete convolution
-    if strcmp(leftObj.NumericalClass, 'intval') || strcmp(leftObj.NumericalClass, 'intval')
-        % One or both are interval Scalars
-        convCoefficient = intvaltimes(leftObj.Coefficient, rightObj.Coefficient, truncMode{:});
-    else
-        % Both Scalars are double
-        convCoefficient = doubletimes(leftObj.Coefficient, rightObj.Coefficient, truncMode{:});
-    end
-    prodObj = Scalar(convCoefficient, convBasis, convTruncation);
+    convBasis = leftObj.Basis;
+    if any(ismember(convBasis, 'Chebyshev'))
 
+        % set truncation mode
+        if nargin == 2 && isequal(leftObj.Truncation, rightObj.Truncation) % default behavior is embedding into the same truncation space
+            truncMode = 'Embed';
+            convTruncation = leftObj.Truncation;
+        else
+            truncMode = varargin{:}; % full 
+            convTruncation = leftObj.Truncation + rightObj.Truncation - 1;
+        end
+        
+        chebyshevIdx = 2; % flip along chebyshev dimenions
+        convCoefficient = chebtaylortimes(leftObj.Coefficient, rightObj.Coefficient, chebyshevIdx, truncMode);
+        prodObj = Scalar(convCoefficient, convBasis, convTruncation);
+
+    elseif strcmp(convBasis, 'Taylor')
+        % set truncation mode
+        if nargin == 2 && isequal(leftObj.Truncation, rightObj.Truncation) % default behavior is embedding into the same truncation space
+            truncMode = arrayfun(@(dim)1:dim, leftObj.Truncation, 'UniformOutput',false); %{1:N1, 1:N2,..., 1:Nd}
+            convTruncation = leftObj.Truncation;
+        elseif nargin > 2 && isa(varargin{1}, 'double') % specify truncation indices explicitly as {idx1, idx2,...,idxd}
+            [truncMode{1:nargin-2}] = varargin{:};
+            convTruncation = cellfun(@(dim)length(dim), varargin);
+        else % truncMode specified by string varargin
+            truncMode = {varargin{1}}; % when objects have different truncations return full convolution
+            convTruncation = leftObj.Truncation + rightObj.Truncation - 1;
+        end
+        
+        % compute coefficients of linear discrete convolution
+        if strcmp(leftObj.NumericalClass, 'intval') || strcmp(leftObj.NumericalClass, 'intval')
+            % One or both are interval Scalars
+            convCoefficient = intvaltimes(leftObj.Coefficient, rightObj.Coefficient, truncMode{:});
+        else
+            % Both Scalars are double
+            convCoefficient = doubletimes(leftObj.Coefficient, rightObj.Coefficient, truncMode{:});
+        end
+        prodObj = Scalar(convCoefficient, convBasis, convTruncation);
+        
+    else
+        error('This basis is not implemented yet')
+    end % if
 elseif isa(leftObj, 'Scalar')
     %% Scalar multiplication with field scalar (right)
     prodObj = leftObj;
@@ -94,9 +110,41 @@ elseif isa(rightObj,'Scalar')
     %% Scalar multiplication with field scalar (left)
     prodObj = rightObj;
     prodObj.Coefficient = rightObj.Coefficient*leftObj;
-
-end
+    
+end % if
 end % mtimes
+
+function chebTaylor = chebtaylortimes(leftCoefficient, rightCoefficient, chebyshevIdx, truncMode)
+%CHEBTAYLOR - A hacky bootstrap for using existing convolution for Chebyshev-Taylor convlution. Fix this shit.
+
+% return a copy of the coefficients mirrored along each Chebyshev dimension
+mirrorLeftCoefficient = Scalar.flipcoef(leftCoefficient, chebyshevIdx);
+mirrorRightCoefficient = Scalar.flipcoef(rightCoefficient, chebyshevIdx);
+
+% THIS ONLY WORKS FOR A SINGLE CHEBYSHEV DIRECTION
+leftPaddedCoefficient = cat(2, mirrorLeftCoefficient, leftCoefficient(:,2:end));
+rightPaddedCoefficient = cat(2, mirrorRightCoefficient, rightCoefficient(:,2:end));
+if isa(leftCoefficient, 'intval') || isa(rightCoefficient, 'intval')
+    convFullCoefficient = intvaltimes(leftPaddedCoefficient, rightPaddedCoefficient, 'Full');
+else
+    convFullCoefficient = doubletimes(leftPaddedCoefficient, rightPaddedCoefficient, 'Full');
+end
+
+N = size(leftCoefficient,2);
+M = size(rightCoefficient,2);
+% first meaningful coefficient in the product is the (M+N-1)^st (thanks Max)
+if strcmp(truncMode, 'Full')
+    chebTaylor = convFullCoefficient(:, N+M-1:end);
+elseif strcmp(truncMode, 'Embed')
+    chebTaylor = convFullCoefficient(:, N+M-1:N+M-1+min(M,N));
+else
+    error('This is not implemented yet')
+end
+end
+
+
+
+
 
 % Revision History:
 %{
@@ -110,4 +158,5 @@ end % mtimes
     implementation for arbitrary dimensions
     support for arbitrary specified truncation
     efficient circular conv routine with padding makes returning smaller truncations much faster
+22-May-2019 - Added support for Chebyshev multiplication. It needs work.
 %}

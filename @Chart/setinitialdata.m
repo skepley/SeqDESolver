@@ -19,13 +19,13 @@ function setinitialdata(obj, initialData, basis)
 % append initial data to chart
 if isa(initialData, 'double') || isa(initialData, 'intval')
     S = size(initialData);
-    if isequal(S(1), obj.Dimension(2)) % initialData(j,:) is a phase space coordinate
-        coefDataSubs = mat2cell(S(2:end), 1, length(S)-1);
-        coefData = mat2cell(initialData, ones(1, S(1)), coefDataSubs{:}); % convert to length-n cell vector
-        obj.InitialData = Scalar(coefData, basis);
-    else
-        error('The first dimension of initialData must be the same as the phase space')
-    end
+    %     if isequal(S(1), obj.Dimension(2)) % initialData(j,:) is a phase space coordinate
+    coefDataSubs = mat2cell(S(2:end), 1, length(S)-1);
+    coefData = mat2cell(initialData, ones(1, S(1)), coefDataSubs{:}); % convert to length-n cell vector
+    obj.InitialData = Scalar(coefData, basis);
+    %     else
+    %         error('The first dimension of initialData must be the same as the phase space')
+    %     end
     
 elseif isa(initialData, 'Scalar')
     
@@ -40,4 +40,5 @@ end
 %{
 14-Aug-2018 - updated for Scalar class
 20-Aug-2018 - updated for changed to Scalar class constructor
+19-Mar-2018 - removed error for appending initial data of wrong size. This will make it compatible with automatic differentiation.
 %}

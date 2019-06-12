@@ -20,11 +20,14 @@ function tailRatio = tailratio(obj, tailCutoff)
 %   email: shane.kepley@rutgers.edu
 %   Date: 23-Apr-2017; Last revision: 13-Aug-2018
 
-if ~strcmp(obj.Basis, 'Taylor')
+if ~strcmp(obj(1).Basis, 'Taylor')
     warning('tailratio - may not be appropriate for non-Taylor basis')
 end
 
-objDimsidx = obj(1).dims();
+objDimsidx = Scalar.dims(obj(1).Coefficient);
+if objDimsidx > 1
+    error('This function has not been updated for higher dimensional data')
+end
 Sz = size(obj(1).Coefficient);
 Sz = Sz(objDimsidx);
 if any(tailCutoff < 1) % Non-tail terms specified as fraction of total terms.
@@ -39,15 +42,16 @@ if length(obj) > 1 % vectors of Scalars
     for j = 1:length(obj)-1
        tailRatio(j) = obj(j).tailratio(tailCutoff);
     end
+    tailRatio = reshape(tailRatio, size(obj));
 else
     switch length(tailCutoff)
         case 1 % obj is 1d
-            objTail = Scalar(obj.Coefficient(tailCutoff:end) obj.Basis);
+            objTail = Scalar(obj.Coefficient(tailCutoff:end), obj.Basis);
 
         case 2 % obj is 2d
             tailCoefficient = obj.Coefficient;
             tailCoefficient(1:tailCutoff(1)-1, 1:tailCutoff(2)-1) = zeros(1:tailCutoff(1)-1, 1:tailCutoff(2)-1);
-            objTail = Scalar(tailCoefficient obj.Basis);
+            objTail = Scalar(tailCoefficient, obj.Basis);
 
         case 3 % obj is 3d
             objTail = Scalar(obj.Coefficient(tailCutoff(1):end, obj.Basis, tailCutoff(2):end, tailCutoff(3):end));
@@ -67,4 +71,5 @@ end % tailratio
 %{
 19-Aug-2017 - support for intval coefficients
 13-Aug-2018 - updated for Scalar class
+21-Mar-2018 - fixed bugs from previous update
 %}

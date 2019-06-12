@@ -1,4 +1,4 @@
-function varargout = ellonebox(chart)
+function varargout = ellonebox(obj)
 %ELLONEBOX - returns a 1-by-n interval vector which bounds the chart in phase space using coarse ell^1 bounds.
 
 %   Syntax:
@@ -22,22 +22,29 @@ function varargout = ellonebox(chart)
 %   email: shane.kepley@rutgers.edu
 %   Date: 01-Jul-2018; Last revision: 01-Jul-2018
 
-if length(chart) > 1 % vectorized version
-    for j = 1:length(chart)
-        chart(j).ellonebox();
+if length(obj) > 1 % vectorized version
+    for j = 1:length(obj)
+        obj(j).ellonebox();
     end
-
-elseif ~isempty(chart.ellOneBox) % ellOneBox is already stored
-    box = chart.ellOneBox;
-
-else % computer box for a single chart
-    center = arrayfun(@(j)chart.Coord(j).Coef(1,1), 1:chart.Dimension(2)); % constant term in chart expansion
-    fullNorm = chart.Coord.norm;
-    radius = fullNorm - abs(center) + chart.StepError; % chart.StepError = 0 for nonrigorous timesteps.
+    
+else % compute box for a single chart
+    center = arrayfun(@(j)obj.Coordinate(j).Coefficient(1,1), 1:obj.Dimension(2)); % constant term in chart expansion
+    fullNorm = obj.Coordinate.norm;
+    
+    if obj.IsValid
+        radius = fullNorm - abs(center) + obj.StepError; % chart.StepError = 0 for nonrigorous timesteps.
+    else
+        radius = 1e-15; % some tiny floating point padding for pseudo intersections
+    end
     box = midrad(center, radius)';
-    chart.ellOneBox = box;
+    %     chart.ellOneBox = box;
 end
 
 varargout{1} = box; % return box if argout
 end
+
+% Revision History:
+%{
+21 May 2019 - Updated for new Scalar and Chart classes. Added support for nonrigorous chart ellonebox enclosures.
+%}
 

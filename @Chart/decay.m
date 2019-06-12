@@ -1,6 +1,6 @@
 function objDecay = decay(obj)
 	% - updated Mar18 2017
-
+    error('This should not be called')
     if ~isprop(obj,'Coord') % all classes should use this going forward
         objDecay = obj.Coefficient.decay;
         return

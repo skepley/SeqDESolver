@@ -1,13 +1,10 @@
-function varargout = subdivide(obj, parmRange, varargin)
+function varargout = subdivide(obj, parmRange, objDomain)
 %SUBDIVIDE - rigorously subdivide a Scalar parameterization into a piecewise Scalar parameterization.
 %
 %   Syntax:
 %       subScalar = SUBDIVIDE(obj, parmRange) is a vector of Scalars of length nDivs which is the number of rows of parmRange.
 %           Each row of parmRange specifies a subset of D^d on which to parameterize each subScalar.
 %
-%       subScalar = SUBDIVIDE(obj, parmRange, t0) assumes that obj is a parameterization in time with respect to the first dimension. obj is first
-%           evaluated at tau = t0 and the resulting (d-1)-dimensional Scalar is subdivided into subScalars.
-%           a piecewise parameterizationsubdivided
 %
 %       [subScalar, subDomain] = SUBDIVIDE(obj, parmRange) subDomain is a nDivs-by-(2d) array of material coordinates with respect to [-1,1]^d. These coordinates
 %           are consecutively inherited by successive calls of subdivide.
@@ -15,7 +12,7 @@ function varargout = subdivide(obj, parmRange, varargin)
 %   Inputs:
 %       obj - Scalar
 %       parmRange - nDivs-by-(2d) array
-%       t0 - double
+%       objDomain - A subset of [-1,1]^d on which the Scalar object defines an analytic function
 %
 %   Outputs:
 %       newParm - vector of Scalars
@@ -28,101 +25,101 @@ function varargout = subdivide(obj, parmRange, varargin)
 
 %   Author: Shane Kepley
 %   email: shane.kepley@rutgers.edu
-%   Date: 18-Jan-2017; Last revision: 13-Aug-2018
+%   Date: 18-Jan-2017; Last revision: 8-Mar-2018
+%
+% TODO: Take advantage of improved error bounds for subScalars in the interior of the spatial domain
 
-% parse input
-p = inputParser;
-addRequired(p,'obj')
-addRequired(p,'parmRange')
-addOptional(p,'t0',[])
-addParameter(p,'domain',[]);
-
-parse(p,obj,parmRange,varargin{:})
-t0 = p.Results.t0;
-objDomain = p.Results.domain;
-
-%% Evaluate obj(s,t0) if specified
-if isempty(t0)
-    spaceParm = obj;
-else
-    t0 = varargin{1};
-    spaceParm = obj.fixtime(t0);
+if nargin > 3
+    error('time-tau evaluation inside Scalar/subdivide was removed. Evaluate this before calling subdivide')
 end
 
-spaceDimension = spaceParm.Dimension;
-if size(parmRange,2) ~= 2*spaceDimension
-    disp('we should stop here')
+scalarDimension = obj(1).Dimension(1); % get dimension of Scalars
+scalarBasis = obj(1).Basis; % get Basis for Scalars
+
+if size(parmRange, 2) ~= 2*scalarDimension
     error('parmRange should have 2*dimension-many columns')
 end
 
-%% Get spatial domain for parent surface
-if nargout == 2
-    if isempty(objDomain) % domain is [-1,1]^d
-        spaceDomain = repmat([-1,1],1,spaceDimension);
-    else
-        spaceDomain = objDomain;
-    end
+% use interval subdivision or not
+if strcmp(obj(1).NumericalClass,'intval')
+    isValid = true;
+else
+    isValid = false;
+end
 
-    switch spaceDimension
+% Get spatial domain for parent surface
+if nargout == 2
+    switch scalarDimension
         case 1
-            % obtain new material coordinates
-            rescale = @(s)(mean(spaceDomain) + .5*s*diff(spaceDomain));
+            % map parmRange which are computed on [-1,1]^d into the actual domain for these Scalars
+            rescale = @(s)(mean(objDomain) + .5*s*diff(objDomain));
             newMTC = rescale(parmRange);
         otherwise
             error('not yet implemented for higher dimensions')
     end
 end
 
-%% Reparameterize surface into subsurfaces
-switch spaceDimension
-    case 1 % spaceParm is a coefficient vector for a 1-d spatial parameterization.
-        if length(spaceParm) ==1 % spaceParm is a single Scalar
-            numSubSurface = size(parmRange,1); % number of subSurfaces
-            if numSubSurface == 1 % parmRange specifies a single subSurface to be parameterized centered at (s1+s2)/2 with radius (s2-s1)/2.
-                newCenter = intval(mean(parmRange)); % midpoint
-                reScaleBy = intval(newCenter - parmRange(1)); % radius
-                N = length(spaceParm.Coefficient);
-                V = pascal(N);
-                shiftOperator = intval(zeros(N));
-                centerPowers = newCenter.^(0:N-1);
-                for j = 1:N
-                    shiftOperator(j,j:end) = V(j,1:N-j+1).*centerPowers(1:N-j+1)*reScaleBy^(j-1);
-                end
-                newParm = (shiftOperator*spaceParm.Coefficient')';
-
-
-            else % each row of parmRange specifies a subsurface
-                % if isequal(obj.NumericalClass,'intval')
-                newParm = midrad(zeros(numSubSurface,spaceParm.Truncation),0);
-                for j = 1:numSubSurface
-                    newParm(j,:) = spaceParm.subdivide(parmRange(j,:));
-                end
+nScalar = length(obj); % number of Scalars to subdivide
+scalarIsColumn = iscolumn(obj); % if Scalar is a column, then transpose the subScalars before returning
+nSubScalar = size(parmRange,1); % number of subdivisions for each Scalar
+% Reparameterize each Scalar into subScalars
+switch scalarDimension
+    case 1 % Scalars are parameterized arcs
+        N = obj.Truncation;
+        V = pascal(N); % initialize Pascal matrix of size N
+        for iSubScalar = 1:nSubScalar % loop over each row in parmRange first so the computations can be reused
+            iSubInterval = parmRange(iSubScalar, :);
+            
+            if isValid
+                iCenter = intval(mean(iSubInterval)); % midpoint
+                iRescaling = intval(iCenter - iSubInterval(1)); % radius
+                iShiftOperator = intval(zeros(N));
+            else
+                iCenter = mean(iSubInterval); % midpoint
+                iRescaling = iCenter - iSubInterval(1); % radius
+                iShiftOperator = zeros(N);
             end
-
-        else % spaceParm is a vector of Scalars
-            objLength = length(spaceParm);
-            newParm{objLength} = spaceParm(objLength).subdivide(parmRange);
-            for j = 1:objLength-1
-                newParm{j} = spaceParm(j).subdivide(parmRange);
+            iCenterPower = iCenter.^(0:N-1);
+            for jRow = 1:N
+                iShiftOperator(jRow, jRow:end) = V(jRow, 1:N-jRow+1).*iCenterPower(1:N-jRow+1)*iRescaling^(jRow-1);
+            end
+            
+            % loop over each Scalar
+            for jScalar = 1:nScalar
+                jCoefficient = obj(jScalar).Coefficient'; % pick off coefficients and make into a column
+                try
+                    subScalarCoefficient = (iShiftOperator*jCoefficient)'; % Coefficients should always be columns
+                catch
+                    subScalarCoefficient = (iShiftOperator*jCoefficient')'; % but mistakes happen
+                end
+                subScalar(iSubScalar, jScalar) = Scalar(subScalarCoefficient, scalarBasis);
+                
             end
         end
-
+        
     otherwise % spaceParm is a higher dimension surface
         error('not yet implemented for higher dimensions')
 end
 
+if scalarIsColumn
+    subScalar = subScalar'; % transpose to match layout of Scalars
+end
+
 switch nargout
     case 1
-        varargout{1} = newParm; % no coordinate transform
+        varargout{1} = subScalar; % no coordinate transform
     case 2
         varargout{1} = newMTC; % new material coordinates
-        varargout{2} = newParm;
+        varargout{2} = subScalar;
 end
-end % subdivide
+end % end subdivide
 
 % Revision History:
 %{
 14-Jun-2017 - implemented rigorous subdivision for Taylor parameterizations
 13-Aug-2018 - updated for Scalar class
+08-Mar-2019 - Removed optional argument for evaluating in time before subdividing. This task should be handled by the Atlas or Chart class.
+    Change the variable argument "domain" to be a required input eliminate confusion about what domain we are subdividing with respect to. Optimized
+    by keeping the reparameterization information for vectorized calls. Changed the output type to always return a Scalar.
 %}
 

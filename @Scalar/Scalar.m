@@ -36,7 +36,7 @@ classdef Scalar
     %   Other m-files required: INTLAB toolbox
     %   MAT-files required: none
     %
-    %   See also: @BAscalar (deprecated version of this class), @Chart
+    %   See also: @Chart, @Atlas
     
     %   Author: Shane Kepley
     %   email: shane.kepley@rutgers.edu
@@ -61,7 +61,7 @@ classdef Scalar
     end
     
     properties(Hidden = 1)
-        Weight = 'ones'; % [nu_1,...,nu_d]: positive double
+        %         Weight = 'ones'; % [nu_1,...,nu_d]: positive double
     end
     
     %% -------------------- Methods --------------------
@@ -110,10 +110,9 @@ classdef Scalar
                 end
                 
                 % set Scalar properties
-                obj.Basis = validatestring(basis, {'Taylor', 'Fourier', 'Chebyshev'});
                 switch class(coefData)
                     case 'polynom'   % coefficient is an IntLab polynomial
-                        if ~strcmp(obj.Basis, 'Taylor')
+                        if ~strcmp(basis, 'Taylor')
                             error('Intlab polynom class is only compatiable with Taylor basis')
                         end
                         coefTruncation = 1 + max(coefData.e);
@@ -136,6 +135,8 @@ classdef Scalar
                             end
                             obj.Coefficient = coefArray;
                         end
+                        obj.Basis = basis;
+                        
                         
                     otherwise % coefficient specifed as double or intval array
                         obj.NumericalClass = class(coefData); % intval or double
@@ -155,11 +156,21 @@ classdef Scalar
                             end
                             obj.Coefficient = coefData;
                         end
+                        
+                        % write basis
+                        if isa(basis, 'cell')
+                            obj.Basis = basis;
+                        else
+                            obj.Basis = cell(1,obj.Dimension);
+                            for j = 1:obj.Dimension
+                                obj.Basis{j} = basis;
+                            end
+                        end
                 end % switch class(coefData)
             end % if nargin > 0
         end %  class constructor
         
-
+        
         %% -------------------- METHOD REPAIR SHOP --------------------
         % The following methods need to be updated and thoroughly checked before using.
         
@@ -387,7 +398,7 @@ end %  classdef
     bug fixes for embedding Scalars into truncation spaces
     addition of overloaded zeros, randi methods
 16-Jan-2019 - Fixed a bug in the embed static method when initializing 1-dimensional Scalars and specifying a truncation size. Bug fixes for
-    decay, bestfitdecay, and embed methods. Details in their respective files. 
+    decay, bestfitdecay, and embed methods. Details in their respective files.
 %}
 
 

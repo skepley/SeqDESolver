@@ -19,7 +19,7 @@ function evalObj = eval(obj, data)
 %   email: shane.kepley@rutgers.edu
 %   Date: 08-Aug-2018; Last revision: 18-Aug-2018
 
-if ~strcmp(obj.Basis, 'Taylor')
+if ~strcmp(obj(1).Basis, 'Taylor')
     warning('eval - only implemented for Taylor basis')
 end
 
@@ -35,9 +35,11 @@ else
         case 0 % constant function
             evalObj = obj.Coefficient(1)*ones(size(data));
         case 1 % data reshaped to m length row vector
-            s = reshape(data,1,[]);
-            S = bsxfun(@power,s,(0:obj.Truncation-1)');
-            evalObj = S'*obj.Coefficient; % left row multiply column of coefficients
+            s = reshape(data,1,[]); % evaluation points as a row vector
+            coefficient = reshape(obj.Coefficient,1,[]); % coefficients as a row vector
+            S = bsxfun(@power,s,(0:obj.Truncation-1)'); % The jth column of S are the increasing powers of s_j
+            evalObj = coefficient*S; % left multiply by row of coefficients
+            
         case 2 % data should be an m-by-2 array
             s = data(:,1);
             t = data(:,2);
