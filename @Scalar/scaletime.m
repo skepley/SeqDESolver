@@ -25,6 +25,10 @@ if ~strcmp(obj(1).Basis, 'Taylor')
 end
 
 
+if isequal(sign(L), -1)
+    warning('Scaling time by a negative value will reverse the time direction of the integration. Be sure this is intentional')
+end
+
 % if strcmp(obj(1).NumericalClass, 'intval')
 %     warning('scaletime - rescaling interval coefficients may cause excessive wrapping.')
 % end
@@ -35,14 +39,15 @@ if numel(obj) > 1 % vectorized norm
         scaledObj(j) = obj(j).scaletime(L);
     end
     scaledObj = reshape(scaledObj, size(obj));
+    
 elseif obj.Truncation(1) ==1
     error('obj.Truncation should not equal 1') % rule out constant with respect to time
 else
     switch obj.Dimension
         case 1
-            scaledObj = Scalar(abs(L)*obj.Coefficient, obj.Basis);
+            scaledObj = Scalar(L*obj.Coefficient, obj.Basis);
         case 2
-            scaledObj = Scalar(repmat(bsxfun(@power,abs(L),(0:obj.Truncation(1)-1)'),[1,obj.Truncation(2)]).*obj.Coefficient, obj.Basis);
+            scaledObj = Scalar(repmat(bsxfun(@power, L,(0:obj.Truncation(1)-1)'),[1,obj.Truncation(2)]).*obj.Coefficient, obj.Basis);
         case 3
             error('Not fixed for dimensions 3 and above')
             scaleCoefficient = @(j)L^(j-1).*obj.Coefficient(j,:,:);
@@ -59,4 +64,6 @@ end
 %{
 02-Jul-2018 - support for Scalar coefficients
 13-Aug-2018 - updated for Scalar class
+5-July-2019 - Updated to allow rescaling by negative values (with a warning). This allows the Chart scaletime method to pass timesteps naturally    
+    without cases for flow direction etc. 
 %}

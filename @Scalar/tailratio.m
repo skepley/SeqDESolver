@@ -60,7 +60,7 @@ else
             error('tailRatio not implemented for Scalar with dimension greater than 3')
     end
     tailNorm = objTail.norm();
-    tailRatio = tailNorm./obj.norm;
+    tailRatio = tailNorm./(obj.norm - abs(obj.Coefficient(1))); % 9 July 2019 - Subtract off the constant term  
 end
 if isa(tailRatio,'intval')
     tailRatio = sup(tailRatio);
@@ -72,4 +72,5 @@ end % tailratio
 19-Aug-2017 - support for intval coefficients
 13-Aug-2018 - updated for Scalar class
 21-Mar-2018 - fixed bugs from previous update
+09-Jul-2019 - Changed the computed ratio to exclude the constant term since this can hide a "fat" tail if it is small relative to the constant. 
 %}
