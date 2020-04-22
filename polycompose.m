@@ -1,4 +1,4 @@
-function taylorCoefs = polycompose(P,theta1,theta2)
+function taylorCoefs = polycompose(P, theta1, theta2)
 %POLYCOMPOSE - compose two polynomials on the level of Taylor coefficients
 %
 %   POLYCOMPOSE() - A more detailed description of the function

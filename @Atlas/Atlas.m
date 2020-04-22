@@ -76,7 +76,7 @@ classdef Atlas < handle
                 
                 % parse variable arguments
                 parse(p, boundaryChart, tau, boundarycheck, advectioncheck, varargin{:})
-                boundaryChart = p.Results.boundaryChart; % set the regularization type
+                boundaryChart = p.Results.boundaryChart; 
                 tau = p.Results.tau;
                 obj.MaxTau = p.Results.MaxTau;
                 obj.MaxGeneration = p.Results.MaxGeneration; % generate the initial data as a boundary chart but don't advect it.

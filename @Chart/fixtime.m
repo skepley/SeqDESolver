@@ -29,7 +29,7 @@ end
 evalObj = obj.deepcopy(); % Initialize a new chart with same properties as obj
 evalObj.Coordinate = fixtime(obj.Coordinate, t); % evaluate the Scalar coordinates in 1st dimension
 evalObj.InitialData = evalObj.Coordinate.deepcopy(); % copy initial coordinates as the initial data Scalar
-[~,evalObj.TimeSpan] = obj.local2global([0,t]); % initial time of new chart is evaluation time of the old chart
+evalObj.TimeSpan = obj.local2global(t, obj.Dimension(1)); % initial time of new chart is evaluation time of the old chart
 evalObj.Dimension(1) = obj.Dimension(1)-1; % drop dimension by one due to evaluation
 evalObj.ParentHandle = obj; % define original chart as the parent of the new boundary chart
 evalObj.Generation = obj.Generation + 1; % advance to next generation

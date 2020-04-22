@@ -80,4 +80,7 @@ The scalar class gives a finite approximation representation for analytic functi
 
 ### Usage
 
+## Atlas
+
+
 # Examples

@@ -28,13 +28,13 @@ if length(obj) > 1 % vectorized version
     end
     
 else % compute box for a single chart
-    center = arrayfun(@(j)obj.Coordinate(j).Coefficient(1,1), 1:obj.Dimension(2)); % constant term in chart expansion
+    center = arrayfun(@(j)obj.Coordinate(j).Coefficient(1,1), (1:obj.Dimension(2))'); % constant term in chart expansion
     fullNorm = obj.Coordinate.norm;
     
     if obj.IsValid
         radius = fullNorm - abs(center) + obj.StepError; % chart.StepError = 0 for nonrigorous timesteps.
     else
-        radius = 1e-15; % some tiny floating point padding for pseudo intersections
+        radius = fullNorm - abs(center) + 1e-14; % add a small floating point padding to subdue roundoff error
     end
     box = midrad(center, radius)';
     %     chart.ellOneBox = box;
@@ -46,5 +46,6 @@ end
 % Revision History:
 %{
 21 May 2019 - Updated for new Scalar and Chart classes. Added support for nonrigorous chart ellonebox enclosures.
+13 Jun 2019 - Fixed bug when computing ell-one boxes for floating point Charts
 %}
 

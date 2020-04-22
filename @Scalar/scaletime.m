@@ -45,7 +45,8 @@ elseif obj.Truncation(1) ==1
 else
     switch obj.Dimension
         case 1
-            scaledObj = Scalar(L*obj.Coefficient, obj.Basis);
+            powerVector = reshape(bsxfun(@power, L, 0:obj.Truncation-1), size(obj.Coefficient));
+            scaledObj = Scalar(powerVector.*obj.Coefficient, obj.Basis);
         case 2
             scaledObj = Scalar(repmat(bsxfun(@power, L,(0:obj.Truncation(1)-1)'),[1,obj.Truncation(2)]).*obj.Coefficient, obj.Basis);
         case 3
@@ -66,4 +67,5 @@ end
 13-Aug-2018 - updated for Scalar class
 5-July-2019 - Updated to allow rescaling by negative values (with a warning). This allows the Chart scaletime method to pass timesteps naturally    
     without cases for flow direction etc. 
+20-Feb-2020 - Rescaling formula was wrong for 1 dimensional Scalars. 
 %}

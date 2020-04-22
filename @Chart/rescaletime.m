@@ -6,7 +6,7 @@ function rescaletime(obj,varargin)
 %   Syntax:
 %       output = RESCALETIME(input1, input2)
 %       [output1, output2] = RESCALETIME(input1, input2, input3)
-%    
+%
 %   Inputs:
 %       input1 - Description
 %       input2 - Description

@@ -64,7 +64,13 @@ switch truncMode
                 I = truncSize{1};
                 leftPad = [zeros(1, length(leftFactor)-min(I)), reshape(leftFactor, 1, [])];
                 padConv = conv(leftPad, rightFactor, 'valid');
-                convCoefficient = padConv(I-min(I)+1);
+                convCoefficient = padConv(I-min(I)+1); % row vector of coefficients of discrete convolution
+                
+                % transpose to match shape of input vectors
+                if ~isrow(leftFactor)
+                    convCoefficient = convCoefficient.';
+                end
+                
                 
             otherwise % n-d convolution
                 % pad enough to make required indices valid and call faster matlab routine
@@ -88,6 +94,6 @@ end % doubletimes
 % Revision History:
 %{
 22-Aug-2018 - support for arbitrary dimensions
-    removed from mtimes method. Functionality now takes double array as input and output. This function is called inside SCalar/mtimes 
+    removed from mtimes method. Functionality now takes double array as input and output. This function is called inside SCalar/mtimes
     but may be called outside as well.
 %}

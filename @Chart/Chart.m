@@ -10,7 +10,10 @@ classdef Chart < handle
     %       Coordinate - A length n vector of Scalars whose domain is a subset of [-1,1]^d.
     %       Dimension - [d,n] with d <= n are the domain and codomain dimension for the Chart.
     %       Truncation - [N1,N2,...,Nd] is a vector identifying the truncation space in which to consider the coordinates of this Chart.
-    %       Tau - nonzero real number which is negative for backward time integration
+    %       TimeSpan - [t0, tf] global coordinates for 1st dimension variable which is often time-like. The "globalness" here is due to the correspondence 
+    %           between [t0, tf] and the interval [0,1] which are the local coordinates for this chart. If tf < t0 (i.e. integration is backwards in time), 
+    %           the local parameterization is still on [0,1] with P(0,:) always pointing to the initial data. 
+    %       Tau - nonzero real number which is negative for backward time integration and positive for forward time integration.
     %
     %   CHART methods:
     %       Method 1 - description
@@ -41,8 +44,8 @@ classdef Chart < handle
         Basis; % A cell array of analytic base functions for each dimension
         Dimension; % [d, n] 
         Truncation; % [N1,...,Nd]
-        TimeSpan; % [t0, t1] - local coordinates for 1st dimension variable which is often time-like.
-        SpatialSpan; % local coordinates with respect to [-1,1]^d for dimensions 2-d which are often space-like.
+        TimeSpan; % [t0, tf] 
+        SpatialSpan; % global coordinates with respect to [-1,1]^d for dimensions 2,3,...,d which are often space-like.
         Tau; % |t1 - t0|
         Crash = false; % Generic property to flag charts which which aren't well conditioned for some context specific reason.
         ErrorBound = []; % rigorous error bound for validated charts or empty if not validated.

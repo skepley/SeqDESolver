@@ -27,18 +27,19 @@ function data = intersectdomain(obj, data)
 %   Date: 02-Apr-2019; Last revision: 02-Apr-2019
 
 % filter by time coordinate
-globalTime = data(:,end);
+globalTime = data(:, end);
 t0 = min(obj.TimeSpan);
 t1 = max(obj.TimeSpan);
 validIdx = (t0 <= globalTime) & (globalTime <= t1); % check data for evaluations which lie in this chart
 data = [data(validIdx, 1:end-1), globalTime(validIdx)]; % filter out valid evaluations
 
 % filter by space coordinate
-globalSpace = data(:,1:end-1);
+% globalSpace = data(:, 1:end); THIS IS A BUG I THINK. FIXED JUN 18 2019. 
+globalSpace = data(:, 1:end-1);
 s0 = obj.SpatialSpan(1);
 s1 = obj.SpatialSpan(2);
 validIdx = (s0 <= globalSpace) & (globalSpace <= s1); % check data for evaluations which lie in this chart
-data = [globalSpace(validIdx,:), data(validIdx,end)]; % filter out valid evaluations
+data = [globalSpace(validIdx, :), data(validIdx, end)]; % filter out valid evaluations
 
 end % end intersectdomain
 

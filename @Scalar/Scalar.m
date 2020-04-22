@@ -160,6 +160,8 @@ classdef Scalar
                         % write basis
                         if isa(basis, 'cell')
                             obj.Basis = basis;
+                        elseif isequal(obj.Dimension, 0)
+                            obj.Basis = {basis}; % handle 0 dimensional initial data
                         else
                             obj.Basis = cell(1,obj.Dimension);
                             for j = 1:obj.Dimension
@@ -399,6 +401,7 @@ end %  classdef
     addition of overloaded zeros, randi methods
 16-Jan-2019 - Fixed a bug in the embed static method when initializing 1-dimensional Scalars and specifying a truncation size. Bug fixes for
     decay, bestfitdecay, and embed methods. Details in their respective files.
+20-Feb-2020 - Fixed a bug where 0 dimensional Scalars would not have a basis defined.
 %}
 
 
